@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://xusang-zh.github.io/myblog/</id>
+    <title>xs&amp;zh</title>
+    <updated>2024-12-03T07:58:55.204Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://xusang-zh.github.io/myblog/"/>
+    <link rel="self" href="https://xusang-zh.github.io/myblog/atom.xml"/>
+    <subtitle>xs&amp;zh的小窝窝</subtitle>
+    <logo>https://xusang-zh.github.io/myblog/images/avatar.png</logo>
+    <icon>https://xusang-zh.github.io/myblog/favicon.ico</icon>
+    <rights>All rights reserved 2024, xs&amp;zh</rights>
+    <entry>
+        <title type="html"><![CDATA[关于creator3.8打包本地正常，部署githubpages的404报错]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/guan-yu-creator38-da-bao-ben-di-zheng-chang-bu-shu-githubpages-de-404-bao-cuo/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/guan-yu-creator38-da-bao-ben-di-zheng-chang-bu-shu-githubpages-de-404-bao-cuo/">
+        </link>
+        <updated>2024-12-02T02:35:37.000Z</updated>
+        <content type="html"><![CDATA[<p>github pages的jekyll模版会忽略下划线开头的文件，所以要禁用jekyll 禁用方法就是在项目根目录下添加一个空白文件，命名为：.nojekyll</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[如何把工程文件复制到linux的docker容器中]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-he-ba-gong-cheng-wen-jian-fu-zhi-dao-linux-de-docker-rong-qi-zhong/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-he-ba-gong-cheng-wen-jian-fu-zhi-dao-linux-de-docker-rong-qi-zhong/">
+        </link>
+        <updated>2024-11-30T10:39:31.000Z</updated>
+        <content type="html"><![CDATA[<p>要将工程文件复制到 Linux 的 Docker 容器中，可以使用 <code>docker cp</code> 命令。这个命令允许你从主机复制文件或目录到容器中，或者从容器中复制文件或目录到主机中。</p>
+<p>以下是具体步骤和示例：</p>
+<h3 id="步骤-1-启动或获取容器-id">步骤 1: 启动或获取容器 ID</h3>
+<p>首先，确保你的 Docker 容器正在运行。如果容器已经运行，可以使用 <code>docker ps</code> 命令来获取容器 ID 或名称。</p>
+<pre><code class="language-sh">docker ps
+</code></pre>
+<p>这将显示类似以下的输出：</p>
+<pre><code>CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS         PORTS     NAMES
+abcd1234efgh   myimage       &quot;/bin/sh -c 'some_cmd'&quot;  2 minutes ago   Up 2 minutes             mycontainer
+</code></pre>
+<p>记录下你目标容器的 <code>CONTAINER ID</code> 或 <code>NAMES</code>。</p>
+<h3 id="步骤-2-使用-docker-cp-复制文件">步骤 2: 使用 <code>docker cp</code> 复制文件</h3>
+<p>假设你有一个工程目录 <code>/path/to/your/project</code> 在主机上，并且你想复制到容器中的 <code>/app</code> 目录。使用以下命令：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+<p>或者，如果你使用容器名称：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project mycontainer:/app
+</code></pre>
+<h3 id="示例">示例</h3>
+<ol>
+<li>
+<p><strong>复制整个目录</strong>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+</li>
+<li>
+<p><strong>复制单个文件</strong>：</p>
+<p>如果你只想复制单个文件，例如 <code>/path/to/your/project/file.txt</code>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project/file.txt abcd1234efgh:/app/file.txt
+</code></pre>
+</li>
+</ol>
+<h3 id="检查复制结果">检查复制结果</h3>
+<p>进入容器并检查文件是否复制成功：</p>
+<pre><code class="language-sh">docker exec -it abcd1234efgh /bin/bash
+</code></pre>
+<p>然后导航到目标目录 <code>/app</code>，确认文件或目录已经复制成功。</p>
+<pre><code class="language-sh">cd /app
+ls -la
+</code></pre>
+<h3 id="其他常用选项">其他常用选项</h3>
+<ul>
+<li>
+<p><strong>从容器复制到主机</strong>：</p>
+<p>假设你要将容器中的 <code>/app/project</code> 目录复制到主机上的 <code>/path/to/backup</code>：</p>
+<pre><code class="language-sh">docker cp abcd1234efgh:/app/project /path/to/backup
+</code></pre>
+</li>
+</ul>
+<h3 id="注意事项">注意事项</h3>
+<ul>
+<li><strong>权限问题</strong>：确保主机上和容器内的目标目录具有适当的权限，否则可能会导致文件无法访问或复制失败。</li>
+<li><strong>路径准确性</strong>：确保使用绝对路径，并且容器内的目标路径存在或可以创建。</li>
+</ul>
+<p>通过这些步骤和示例，你可以轻松地将工程文件复制到 Linux 的 Docker 容器中，或从容器中复制文件到主机。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[如何在debian系统中安装python3.8.3，以及创建虚拟环境]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-he-zai-debian-xi-tong-zhong-an-zhuang-python383yi-ji-chuang-jian-xu-ni-huan-jing/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-he-zai-debian-xi-tong-zhong-an-zhuang-python383yi-ji-chuang-jian-xu-ni-huan-jing/">
+        </link>
+        <updated>2024-11-30T10:39:20.000Z</updated>
+        <content type="html"><![CDATA[<p>在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境，可以通过以下步骤完成。</p>
+<h3 id="步骤-1-更新包列表">步骤 1: 更新包列表</h3>
+<p>首先，更新你的包列表以确保你有最新的可用软件包信息。</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+<h3 id="步骤-2-安装依赖项">步骤 2: 安装依赖项</h3>
+<p>安装编译 Python 所需的依赖项。</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+<h3 id="步骤-3-下载-python-383-源码">步骤 3: 下载 Python 3.8.3 源码</h3>
+<p>从 Python 官方网站下载 Python 3.8.3 的源码。</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-4-解压源码文件">步骤 4: 解压源码文件</h3>
+<p>解压下载的源码文件。</p>
+<pre><code class="language-sh">tar -xf Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-5-编译和安装-python-383">步骤 5: 编译和安装 Python 3.8.3</h3>
+<p>进入解压后的目录，并配置、编译和安装 Python。</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+<p>使用 <code>make altinstall</code> 而不是 <code>make install</code> 以避免覆盖系统默认的 Python 版本。</p>
+<h3 id="步骤-6-验证安装">步骤 6: 验证安装</h3>
+<p>检查 Python 3.8.3 是否安装成功。</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+<p>应该会看到类似以下的输出：</p>
+<pre><code>Python 3.8.3
+</code></pre>
+<h3 id="步骤-7-安装-virtualenv">步骤 7: 安装 <code>virtualenv</code></h3>
+<p>安装 <code>virtualenv</code> 以便创建虚拟环境。</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+<h3 id="步骤-8-创建虚拟环境">步骤 8: 创建虚拟环境</h3>
+<p>创建一个新的虚拟环境。假设你要在 <code>~/myproject</code> 目录中创建一个虚拟环境。</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+</code></pre>
+<h3 id="步骤-9-激活虚拟环境">步骤 9: 激活虚拟环境</h3>
+<p>激活虚拟环境以开始使用它。</p>
+<pre><code class="language-sh">source ~/myproject/venv/bin/activate
+</code></pre>
+<p>你应该会看到你的 shell 提示符发生变化，显示虚拟环境的名称，这表示虚拟环境已激活。</p>
+<h3 id="步骤-10-安装所需的包">步骤 10: 安装所需的包</h3>
+<p>在虚拟环境中安装你需要的 Python 包。你可以使用 <code>pip</code> 来安装包，例如：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<ol>
+<li>
+<p>更新包列表：</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+</li>
+<li>
+<p>安装依赖项：</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+</li>
+<li>
+<p>下载和解压 Python 3.8.3 源码：</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+tar -xf Python-3.8.3.tgz
+</code></pre>
+</li>
+<li>
+<p>编译和安装 Python 3.8.3：</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+</li>
+<li>
+<p>验证安装：</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+</li>
+<li>
+<p>安装 <code>virtualenv</code>：</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+</li>
+<li>
+<p>创建并激活虚拟环境：</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+source ~/myproject/venv/bin/activate
+</code></pre>
+</li>
+<li>
+<p>在虚拟环境中安装包：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+</li>
+</ol>
+<p>通过这些步骤，你就可以在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境了。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[将 Docker 容器保存为镜像并上传到 Docker Hub]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/jiang-docker-rong-qi-bao-cun-wei-jing-xiang-bing-shang-chuan-dao-docker-hub/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/jiang-docker-rong-qi-bao-cun-wei-jing-xiang-bing-shang-chuan-dao-docker-hub/">
+        </link>
+        <updated>2024-11-30T10:39:11.000Z</updated>
+        <content type="html"><![CDATA[<p>要将 Docker 容器保存为镜像并上传到 Docker Hub，你可以按照以下步骤操作：</p>
+<h3 id="步骤-1-提交容器为镜像">步骤 1: 提交容器为镜像</h3>
+<p>假设你的容器名称或 ID 是 <code>my_container</code>，你可以使用 <code>docker commit</code> 命令将其保存为一个新的镜像。以下是将容器保存为镜像的示例：</p>
+<pre><code class="language-sh">docker commit my_container my_username/my_image_name:tag
+</code></pre>
+<ul>
+<li><code>my_container</code>: 容器的名称或 ID。</li>
+<li><code>my_username/my_image_name:tag</code>: 创建的镜像名称和标签（<code>tag</code> 是可选的，默认是 <code>latest</code>）。</li>
+</ul>
+<h3 id="步骤-2-登录-docker-hub">步骤 2: 登录 Docker Hub</h3>
+<p>确保你已经在 Docker Hub 上有一个帐户。如果没有，请访问 <a href="https://hub.docker.com">Docker Hub</a> 注册一个帐户。</p>
+<p>然后，在命令行中登录到 Docker Hub：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+<p>系统会提示你输入 Docker Hub 的用户名和密码。</p>
+<h3 id="步骤-3-推送镜像到-docker-hub">步骤 3: 推送镜像到 Docker Hub</h3>
+<p>使用 <code>docker push</code> 命令将镜像上传到 Docker Hub。确保镜像名称和标签与之前 <code>docker commit</code> 创建的镜像一致。</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:tag
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<p>假设你的 Docker Hub 用户名是 <code>my_username</code>，容器 ID 是 <code>abcd1234efgh</code>，并且你希望将其保存为镜像 <code>my_image_name</code> 并标记为 <code>v1</code>：</p>
+<ol>
+<li>
+<p><strong>提交容器为镜像</strong>：</p>
+<pre><code class="language-sh">docker commit abcd1234efgh my_username/my_image_name:v1
+</code></pre>
+</li>
+<li>
+<p><strong>登录 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+</li>
+<li>
+<p><strong>推送镜像到 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:v1
+</code></pre>
+</li>
+</ol>
+<h3 id="示例操作">示例操作</h3>
+<p>以下是完整操作的命令行输出示例：</p>
+<pre><code class="language-sh"># 提交容器为镜像
+docker commit abcd1234efgh my_username/my_image_name:v1
+# 成功返回的镜像 ID
+sha256:3b9ac9e09b8a9f9d9b4c1f6390a2c1e0b4c5a1e2f8e8f9b8b7a0e8c1b9a0e1c2
+
+# 登录 Docker Hub
+docker login
+# 提示输入用户名和密码
+Username: my_username
+Password:
+
+# 推送镜像到 Docker Hub
+docker push my_username/my_image_name:v1
+# 推送成功的输出
+The push refers to repository [docker.io/my_username/my_image_name]
+v1: digest: sha256:9b9c1e1a1b1c2d1e2f3e4g5h6i7j8k9l0m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5 size: 1234
+</code></pre>
+<h3 id="注意事项">注意事项</h3>
+<ol>
+<li><strong>命名规范</strong>：确保镜像名称遵循 Docker Hub 的命名规范，通常是 <code>username/repository:tag</code> 的格式。</li>
+<li><strong>权限</strong>：确保你的 Docker Hub 账户有权推送到指定的镜像库。</li>
+<li><strong>私有仓库</strong>：如果你的 Docker Hub 仓库是私有的，确保你的账户有相应的权限访问和推送。</li>
+</ol>
+<p>通过这些步骤，你可以将 Docker 容器保存为镜像并上传到 Docker Hub 的镜像库中。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[proxy_pool的Dockerfile文件内容解释]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/proxy_pool-de-dockerfile-wen-jian-nei-rong-jie-shi/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/proxy_pool-de-dockerfile-wen-jian-nei-rong-jie-shi/">
+        </link>
+        <updated>2024-11-30T10:39:01.000Z</updated>
+        <content type="html"><![CDATA[<p>FROM python:3.6-alpine</p>
+<p>MAINTAINER jhao104 <a href="mailto:j_hao104@163.com">j_hao104@163.com</a></p>
+<p>WORKDIR /app</p>
+<p>COPY ./requirements.txt .</p>
+<h1 id="apk-repository">apk repository</h1>
+<p>RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories</p>
+<h1 id="timezone">timezone</h1>
+<p>RUN apk add -U tzdata &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; apk del tzdata</p>
+<h1 id="runtime-environment">runtime environment</h1>
+<p>RUN apk add musl-dev gcc libxml2-dev libxslt-dev &amp;&amp; <br>
+pip install --no-cache-dir -r requirements.txt &amp;&amp; <br>
+apk del gcc musl-dev</p>
+<p>COPY . .</p>
+<p>EXPOSE 5010</p>
+<p>ENTRYPOINT [ &quot;sh&quot;, &quot;start.sh&quot; ]</p>
+<p>这个 Dockerfile 用于构建一个基于 Alpine Linux 的 Python 应用镜像，包含了一些必要的设置和依赖项安装。以下是每一行的详细解释：</p>
+<h3 id="基础镜像和维护者信息">基础镜像和维护者信息</h3>
+<pre><code class="language-dockerfile">FROM python:3.6-alpine
+</code></pre>
+<ul>
+<li>使用 Python 3.6 的 Alpine 版本作为基础镜像。Alpine Linux 是一个轻量级的 Linux 发行版，通常用于构建小型 Docker 镜像。</li>
+</ul>
+<pre><code class="language-dockerfile">MAINTAINER jhao104 &lt;j_hao104@163.com&gt;
+</code></pre>
+<ul>
+<li>定义镜像的维护者信息。这个字段可以包含维护者的名字和联系方式。</li>
+</ul>
+<h3 id="工作目录设置">工作目录设置</h3>
+<pre><code class="language-dockerfile">WORKDIR /app
+</code></pre>
+<ul>
+<li>设置工作目录为 <code>/app</code>。所有接下来的指令将会在这个目录中执行。</li>
+</ul>
+<h3 id="复制和安装依赖项">复制和安装依赖项</h3>
+<pre><code class="language-dockerfile">COPY ./requirements.txt .
+</code></pre>
+<ul>
+<li>将当前目录下的 <code>requirements.txt</code> 文件复制到容器的 <code>/app</code> 目录中。</li>
+</ul>
+<pre><code class="language-dockerfile"># apk repository
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+</code></pre>
+<ul>
+<li>替换 Alpine Linux 的软件仓库为中国科学技术大学的镜像，以加速软件包的下载速度。</li>
+</ul>
+<pre><code class="language-dockerfile"># timezone
+RUN apk add -U tzdata &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; apk del tzdata
+</code></pre>
+<ul>
+<li>安装时区数据包 <code>tzdata</code>。</li>
+<li>将时区设置为上海时间。</li>
+<li>删除 <code>tzdata</code> 包以减少镜像大小。</li>
+</ul>
+<pre><code class="language-dockerfile"># runtime environment
+RUN apk add musl-dev gcc libxml2-dev libxslt-dev &amp;&amp; \
+    pip install --no-cache-dir -r requirements.txt &amp;&amp; \
+    apk del gcc musl-dev
+</code></pre>
+<ul>
+<li>安装构建环境和依赖项，包括 <code>musl-dev</code>、<code>gcc</code>、<code>libxml2-dev</code> 和 <code>libxslt-dev</code>。</li>
+<li>使用 <code>pip</code> 安装 <code>requirements.txt</code> 中列出的 Python 依赖项，并使用 <code>--no-cache-dir</code> 选项来避免缓存安装包，以减少镜像大小。</li>
+<li>删除 <code>gcc</code> 和 <code>musl-dev</code> 包，以减少镜像大小。</li>
+</ul>
+<h3 id="复制应用程序文件">复制应用程序文件</h3>
+<pre><code class="language-dockerfile">COPY . .
+</code></pre>
+<ul>
+<li>将当前目录下的所有文件复制到容器的 <code>/app</code> 目录中。</li>
+</ul>
+<h3 id="暴露端口和启动容器">暴露端口和启动容器</h3>
+<pre><code class="language-dockerfile">EXPOSE 5010
+</code></pre>
+<ul>
+<li>声明容器将在运行时监听的端口（5010）。</li>
+</ul>
+<pre><code class="language-dockerfile">ENTRYPOINT [ &quot;sh&quot;, &quot;start.sh&quot; ]
+</code></pre>
+<ul>
+<li>设置容器启动时执行的命令，即运行 <code>start.sh</code> 脚本。<code>start.sh</code> 脚本应包含启动应用程序的命令。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>这个 Dockerfile 文件构建了一个轻量级的 Python 应用镜像，设置了工作目录，复制了应用程序文件和依赖项，配置了中国的镜像源，加速包的下载，并配置了上海时区。构建过程包括安装依赖项和环境设置，最后指定了容器启动时的入口点。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[应用容器，连接redis容器]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ying-yong-rong-qi-lian-jie-redis-rong-qi/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ying-yong-rong-qi-lian-jie-redis-rong-qi/">
+        </link>
+        <updated>2024-11-30T10:38:51.000Z</updated>
+        <content type="html"><![CDATA[<p>如果应用通过环境变量 <code>DB_CONN</code> 来配置 Redis 的连接信息，并且希望在 Docker 容器之间连接 Redis，那么你需要确保 <code>DB_CONN</code> 环境变量包含正确的 Redis 连接字符串。假设 Redis 容器没有设置密码并且暴露端口为 <code>6379</code>，并且你使用了自定义的 Docker 网络 <code>my_network</code>，以下是步骤和命令。</p>
+<h3 id="修改后的步骤">修改后的步骤</h3>
+<ol>
+<li>
+<p><strong>创建自定义网络（如果还未创建）：</strong></p>
+<pre><code class="language-sh">docker network create my_network
+</code></pre>
+</li>
+<li>
+<p><strong>运行 Redis 容器：</strong></p>
+<pre><code class="language-sh">docker run -d --name redis-container --network my_network -p 6379:6379 redis:latest
+</code></pre>
+</li>
+<li>
+<p><strong>运行应用容器并设置 <code>DB_CONN</code> 环境变量：</strong></p>
+<pre><code class="language-sh">docker run -d --name app-container --network my_network -p 5010:5010 --env DB_CONN=redis://redis-container:6379/0 username/proxy_pool:latest
+</code></pre>
+<p>这里的 <code>DB_CONN</code> 环境变量值是 <code>redis://redis-container:6379/0</code>，表示：</p>
+<ul>
+<li><code>redis://</code> 是协议头。</li>
+<li><code>redis-container</code> 是 Redis 容器的名称，Docker 网络会自动解析它的 IP 地址。</li>
+<li><code>6379</code> 是 Redis 容器暴露的端口。</li>
+<li><code>/0</code> 是 Redis 数据库编号。</li>
+</ul>
+</li>
+</ol>
+<h3 id="详细说明">详细说明</h3>
+<ul>
+<li><code>--network my_network</code>：将应用容器连接到 <code>my_network</code> 网络，与 Redis 容器在同一网络中。</li>
+<li><code>--env DB_CONN=redis://redis-container:6379/0</code>：设置 <code>DB_CONN</code> 环境变量，让应用连接到 <code>redis-container</code> 上的 Redis 服务。</li>
+</ul>
+<h3 id="示例命令总结">示例命令总结</h3>
+<p>以下是完整的命令步骤：</p>
+<ol>
+<li>
+<p><strong>创建自定义网络（如果还未创建）：</strong></p>
+<pre><code class="language-sh">docker network create my_network
+</code></pre>
+</li>
+<li>
+<p><strong>运行 Redis 容器：</strong></p>
+<pre><code class="language-sh">docker run -d --name redis-container --network my_network -p 6379:6379 redis:latest
+</code></pre>
+</li>
+<li>
+<p><strong>运行应用容器并设置 <code>DB_CONN</code> 环境变量：</strong></p>
+<pre><code class="language-sh">docker run -d --name app-container --network my_network -p 5010:5010 --env DB_CONN=redis://redis-container:6379/0 jhao104/proxy_pool:latest
+</code></pre>
+</li>
+</ol>
+<h3 id="验证连接">验证连接</h3>
+<p>运行这几个命令后，你可以通过访问 <code>http://localhost:5010</code> 验证你的应用是否能够正常工作并连接到 Redis 服务。通过 Docker 自定义网络，你可以避免手动查找 IP 地址和进行复杂的配置，使用容器名称即可轻松实现服务间通信。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[客户端改窗口大小]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ke-hu-duan-gai-chuang-kou-da-xiao/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ke-hu-duan-gai-chuang-kou-da-xiao/">
+        </link>
+        <updated>2024-11-30T10:38:39.000Z</updated>
+        <content type="html"><![CDATA[<p>在main.cpp中修改</p>
+<pre><code class="language-cpp">#define FRAME_WIDTH  720
+#define FRAME_HTIGHT  1280 * 0.75
+
+//在GetSuitableWinSize函数中修改
+suitableSizes = {
+CCSize(640,960),
+//...
+}
+</code></pre>
+<p>然后重新生成解决方案</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[在linux的docker下部署并启动jira]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/zai-linux-de-docker-xia-bu-shu-bing-qi-dong-jira/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/zai-linux-de-docker-xia-bu-shu-bing-qi-dong-jira/">
+        </link>
+        <updated>2024-11-30T10:38:28.000Z</updated>
+        <content type="html"><![CDATA[<p>jira是部署在docker下，先进入docker</p>
+<pre><code class="language-shell">docker exec -it jira /bin/bash
+
+# cd到jira的安装目录
+cd /opt/atlassian/jira/bin
+
+# 直接启动startup.sh
+./startup.sh
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Go在windows下编译linux文件，并部署]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/go-zai-windows-xia-bian-yi-linux-wen-jian-bing-bu-shu/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/go-zai-windows-xia-bian-yi-linux-wen-jian-bing-bu-shu/">
+        </link>
+        <updated>2024-11-30T10:38:17.000Z</updated>
+        <content type="html"><![CDATA[<p>1.先要cd到<code>go.mod</code>所在的目录下<br>
+2.执行以下脚本</p>
+<pre><code class="language-shell">set GOROOT=c:\Go
+set GOARCH=amd64
+set GOOS=linux
+go build -o filename main.go
+scp ../../config/configfilename.bytes root@remoteip:/data/api/config
+scp filename root@remoteip:/data/api/bin/
+</code></pre>
+<blockquote>
+<h2 id="注意这里第一条set-gorootcgo不加的话编译出来的会是exe的不知道为啥脚本里的remoteip要换成对应的远程服务器ip地址">注意：这里第一条<code>set GOROOT=c:\Go</code>不加的话，编译出来的会是<code>exe</code>的，不知道为啥<br>
+脚本里的remoteip要换成对应的远程服务器ip地址</h2>
+<p>还有个情况就是，就算按照上面的写，可能出来的还是exe，这个时候就连在一起写，不知道为啥，网上说是每句的结束有空格什么的</p>
+</blockquote>
+<pre><code class="language-shell">set GOROOT=c:\Go&amp;&amp;set GOARCH=amd64&amp;&amp;set GOOS=linux&amp;&amp;go build -o outputname main.go
+</code></pre>
+<p>3.执行脚本的时候，会要求输入远程服务器密码，输入后就会开始传输<br>
+4.完成之后进入到远程主机上，到文件所在目录，使用命令给文件赋予权限</p>
+<pre><code class="language-shell">chmod 777 filename
+</code></pre>
+<p>5.然后运行文件，可以后台运行</p>
+<pre><code class="language-shell">nohup ./filename &amp;
+</code></pre>
+<p>6.结束</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Docker部署mysql]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/docker-bu-shu-mysql/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/docker-bu-shu-mysql/">
+        </link>
+        <updated>2024-11-30T10:38:02.000Z</updated>
+        <content type="html"><![CDATA[<h5 id="拉取数据库">拉取数据库</h5>
+<pre><code class="language-shell">docker pull mysql:5.7.37
+</code></pre>
+<hr>
+<h5 id="查看3306端口是否被占用或者是否有mysql启动">查看3306端口是否被占用,或者是否有mysql启动</h5>
+<pre><code class="language-shell">netstat -nultp|grep 3306
+ps aux |grep mysql
+
+# 如果有mysql启动着，就停止，用kill -9 pid杀不掉进程
+# 可以用 sudo service mysql stop 命令停止mysql进程
+
+# 然后就可以创建并启动容器，否则会报错端口占用
+</code></pre>
+<hr>
+<h5 id="创建数据库容器">创建数据库容器</h5>
+<pre><code class="language-shell">docker run -itd --name mysqlserver -p 3306:3306 -e MYSQL_ROOT_PASSWORD='123456' mysql:5.7.37
+</code></pre>
+<hr>
+<h5 id="设置sql_mode">设置sql_mode</h5>
+<pre><code class="language-shell"># 进入docker容器
+docker exec -it mysqlserver /bin/bash
+
+# 进入容器后可以设置数据库sql_mode
+# 进入mysql
+mysql -hlocalhost -uroot -p
+
+# 进入后查看当前的sql_mode
+select @@sql_mode
+
+# 修改sql_mode
+SET @@sql_mode = &quot;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;
+
+# 但是这里会有个问题，就是服务重启后，就失效了，可以直接改配置文件
+# 先退出到宿主机
+# 将容器配置文件copy到宿主机，注意要先创建目标目录
+docker cp mysqlserver:/etc/mysql/mysql.conf.d/mysql.cnf /home/mysql/conf/mysql.cnf
+
+# 执行vim命令
+vim /home/mysql/conf/mysql.cnf
+# 在末尾增加内容
+sql_mode=&quot;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;
+:wq #保存后退出
+
+# 将修改后的文件copy回容器内
+docker cp /home/mysql/conf/mysql.cnf mysqlserver:/etc/mysql/mysql.conf.d/mysql.cnf
+
+# 重启docker容器
+docker restart mysqlserver
+
+# 可以进入mysql容器内确认sql_mode是否改变
+</code></pre>
+<hr>
+<h5 id="导入sql">导入sql</h5>
+<pre><code class="language-shell"># 先创建数据库
+CREATE DATABASE IF NOT EXISTS databasename DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
+# 切换到目标数据库
+use dbname;
+
+# 导入sql文件
+source /home/db/filename.sql;
+</code></pre>
+]]></content>
+    </entry>
+</feed>
