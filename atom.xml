@@ -1,0 +1,902 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://xusang-zh.github.io/myblog/</id>
+    <title>xs&amp;zh</title>
+    <updated>2024-12-05T08:57:18.419Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://xusang-zh.github.io/myblog/"/>
+    <link rel="self" href="https://xusang-zh.github.io/myblog/atom.xml"/>
+    <subtitle>xs&amp;zh的小窝窝</subtitle>
+    <logo>https://xusang-zh.github.io/myblog/images/avatar.png</logo>
+    <icon>https://xusang-zh.github.io/myblog/favicon.ico</icon>
+    <rights>All rights reserved 2024, xs&amp;zh</rights>
+    <entry>
+        <title type="html"><![CDATA[如果github下的多个仓库对应多个密钥，如何在windows的.ssh中配置不同的仓库使用不同的密钥]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-guo-github-xia-de-duo-ge-cang-ku-dui-ying-duo-ge-mi-yao-ru-he-zai-windows-de-ssh-zhong-pei-zhi-bu-tong-de-cang-ku-shi-yong-bu-tong-de-mi-yao/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-guo-github-xia-de-duo-ge-cang-ku-dui-ying-duo-ge-mi-yao-ru-he-zai-windows-de-ssh-zhong-pei-zhi-bu-tong-de-cang-ku-shi-yong-bu-tong-de-mi-yao/">
+        </link>
+        <updated>2024-12-05T08:48:44.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="1-创建编辑-ssh-配置文件">1. 创建/编辑 SSH 配置文件</h3>
+<pre><code class="language-bash"># 在 C:\Users\YourUsername\.ssh\config 中配置
+# 如果文件不存在，创建它
+
+# GitHub 仓库1
+Host git-repo1 # 自定义的主机名称，后面设置仓库远程地址的时候用
+    HostName github.com  # 如果是其他仓库，换成仓库对应的域名，如：e.coding.net
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo1
+
+# GitHub 仓库2
+Host git-repo2
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo2
+
+# GitHub 仓库3
+Host git-repo3
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo3
+</code></pre>
+<h3 id="2-配置仓库远程地址">2. 配置仓库远程地址</h3>
+<pre><code class="language-bash"># 仓库1
+git remote set-url origin git@git-repo1:username/repo1.git # 前面配置的Host在这里用，替换仓库地址中对应的HostName
+
+# 仓库2
+git remote set-url origin git@git-repo2:username/repo2.git
+
+# 仓库3
+git remote set-url origin git@git-repo3:username/repo3.git
+</code></pre>
+<h3 id="4-验证配置">4. 验证配置</h3>
+<pre><code class="language-bash"># 测试仓库1的连接
+ssh -T git@git-repo1
+
+# 测试仓库2的连接
+ssh -T git@git-repo2
+
+# 测试仓库3的连接
+ssh -T git@git-repo3
+</code></pre>
+<h3 id="5-克隆和使用">5. 克隆和使用</h3>
+<pre><code class="language-bash"># 克隆个人仓库
+git clone git@git-repo1:username/repo1.git
+
+# 克隆工作仓库
+git clone git@git-repo2:username/repo2.git
+
+# 克隆项目仓库
+git clone git@git-repo3:username/repo3.git
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[h5游戏的客户端和服务端之间的通信，是用websocket还是tcp]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/h5-you-xi-de-ke-hu-duan-he-fu-wu-duan-zhi-jian-de-tong-xin-shi-yong-websocket-huan-shi-tcp/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/h5-you-xi-de-ke-hu-duan-he-fu-wu-duan-zhi-jian-de-tong-xin-shi-yong-websocket-huan-shi-tcp/">
+        </link>
+        <updated>2024-12-05T01:53:43.000Z</updated>
+        <content type="html"><![CDATA[<p>对于 H5 游戏来说，由于浏览器不能直接使用 TCP，我们需要在服务端提供一个 WebSocket 服务作为代理，然后再通过 TCP 连接到游戏服务器</p>
+<ul>
+<li>首先是浏览器端的 WebSocket 客户端代码：</li>
+</ul>
+<pre><code class="language-typescript">interface Message {
+    cmd: number;
+    data: any;
+}
+
+export class GameSocket {
+    private ws: WebSocket;
+    private messageHandlers: Map&lt;number, (data: any) =&gt; void&gt;;
+
+    constructor(wsUrl: string) {
+        this.messageHandlers = new Map();
+        this.ws = new WebSocket(wsUrl);
+        this.initWebSocket();
+    }
+
+    private initWebSocket() {
+        this.ws.onopen = () =&gt; {
+            console.log('WebSocket连接成功');
+            // 发送登录消息
+            this.send(1001, { userId: '123' });
+        };
+
+        this.ws.onmessage = (event) =&gt; {
+            const message: Message = JSON.parse(event.data);
+            this.handleMessage(message);
+        };
+
+        this.ws.onclose = () =&gt; {
+            console.log('WebSocket连接关闭');
+            // 可以实现重连逻辑
+        };
+
+        this.ws.onerror = (error) =&gt; {
+            console.error('WebSocket错误:', error);
+        };
+    }
+
+    public on(cmd: number, handler: (data: any) =&gt; void) {
+        this.messageHandlers.set(cmd, handler);
+    }
+
+    public send(cmd: number, data: any) {
+        const message: Message = { cmd, data };
+        this.ws.send(JSON.stringify(message));
+    }
+
+    private handleMessage(message: Message) {
+        const handler = this.messageHandlers.get(message.cmd);
+        if (handler) {
+            handler(message.data);
+        }
+    }
+}
+
+// 使用示例
+const gameSocket = new GameSocket('ws://localhost:8080/ws');
+
+gameSocket.on(1002, (data) =&gt; {
+    console.log('收到游戏消息:', data);
+});
+</code></pre>
+<ul>
+<li>WebSocket 代理服务器（Go）：</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+    &quot;net/http&quot;
+    &quot;sync&quot;
+
+    &quot;github.com/gorilla/websocket&quot;
+)
+
+const (
+    HeaderSize = 8
+    TCPServerAddr = &quot;localhost:9000&quot;  // TCP游戏服务器地址
+)
+
+// WebSocket升级器
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
+}
+
+// 代理连接
+type ProxyConnection struct {
+    wsConn  *websocket.Conn
+    tcpConn net.Conn
+    mutex   sync.Mutex
+}
+
+type Message struct {
+    Cmd  int         `json:&quot;cmd&quot;`
+    Data interface{} `json:&quot;data&quot;`
+}
+
+func main() {
+    http.HandleFunc(&quot;/ws&quot;, handleWebSocket)
+    log.Printf(&quot;WebSocket代理服务器启动在 :8080&quot;)
+    log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+    wsConn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Printf(&quot;WebSocket升级失败: %v&quot;, err)
+        return
+    }
+    defer wsConn.Close()
+
+    // 连接TCP服务器
+    tcpConn, err := net.Dial(&quot;tcp&quot;, TCPServerAddr)
+    if err != nil {
+        log.Printf(&quot;连接TCP服务器失败: %v&quot;, err)
+        return
+    }
+    defer tcpConn.Close()
+
+    proxy := &amp;ProxyConnection{
+        wsConn:  wsConn,
+        tcpConn: tcpConn,
+    }
+
+    // 启动转发协程
+    go proxy.wsToTcp()
+    proxy.tcpToWs()
+}
+
+// WebSocket -&gt; TCP
+func (p *ProxyConnection) wsToTcp() {
+    for {
+        // 读取WebSocket消息
+        _, wsData, err := p.wsConn.ReadMessage()
+        if err != nil {
+            log.Printf(&quot;读取WebSocket消息失败: %v&quot;, err)
+            return
+        }
+
+        // 解析WebSocket消息
+        var msg Message
+        if err := json.Unmarshal(wsData, &amp;msg); err != nil {
+            log.Printf(&quot;解析WebSocket消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 转换为TCP消息格式
+        tcpMsg, err := createTCPMessage(msg.Cmd, msg.Data)
+        if err != nil {
+            log.Printf(&quot;创建TCP消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 发送到TCP服务器
+        p.mutex.Lock()
+        _, err = p.tcpConn.Write(tcpMsg)
+        p.mutex.Unlock()
+        if err != nil {
+            log.Printf(&quot;发送TCP消息失败: %v&quot;, err)
+            return
+        }
+    }
+}
+
+// TCP -&gt; WebSocket
+func (p *ProxyConnection) tcpToWs() {
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        // 读取TCP消息
+        n, err := p.tcpConn.Read(buffer)
+        if err != nil {
+            log.Printf(&quot;读取TCP消息失败: %v&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+        messageBuffer = p.handleTCPMessages(messageBuffer)
+    }
+}
+
+func (p *ProxyConnection) handleTCPMessages(buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            
+            // 解析TCP消息体
+            var data interface{}
+            if err := json.Unmarshal(messageBody, &amp;data); err != nil {
+                log.Printf(&quot;解析TCP消息体失败: %v&quot;, err)
+                buffer = buffer[length:]
+                continue
+            }
+
+            // 转换为WebSocket消息
+            wsMsg := Message{
+                Cmd:  int(cmd),
+                Data: data,
+            }
+
+            // 发送WebSocket消息
+            p.mutex.Lock()
+            err := p.wsConn.WriteJSON(wsMsg)
+            p.mutex.Unlock()
+            if err != nil {
+                log.Printf(&quot;发送WebSocket消息失败: %v&quot;, err)
+                return buffer
+            }
+
+            buffer = buffer[length:]
+        } else {
+            break
+        }
+    }
+    return buffer
+}
+
+func createTCPMessage(cmd int, data interface{}) ([]byte, error) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        return nil, err
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    messageLength := HeaderSize + len(jsonData)
+    binary.BigEndian.PutUint32(header[0:4], uint32(messageLength))
+    binary.BigEndian.PutUint32(header[4:8], uint32(cmd))
+
+    // 组合完整消息
+    return append(header, jsonData...), nil
+}
+</code></pre>
+<ul>
+<li>TCP 游戏服务器</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+)
+
+// 消息头部大小（4字节长度 + 4字节命令号）
+const HeaderSize = 8
+
+// Client 客户端连接
+type Client struct {
+    conn net.Conn
+    send chan []byte
+}
+
+// Message 消息结构
+type Message struct {
+    Length uint32
+    Cmd    uint32
+    Data   []byte
+}
+
+func main() {
+    listener, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+    if err != nil {
+        log.Fatal(&quot;监听端口失败:&quot;, err)
+    }
+    defer listener.Close()
+
+    log.Println(&quot;服务器启动在 :8080&quot;)
+
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Println(&quot;接受连接失败:&quot;, err)
+            continue
+        }
+
+        client := &amp;Client{
+            conn: conn,
+            send: make(chan []byte, 256),
+        }
+
+        go handleConnection(client)
+    }
+}
+
+func handleConnection(client *Client) {
+    defer client.conn.Close()
+
+    // 启动发送协程
+    go writeLoop(client)
+
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        n, err := client.conn.Read(buffer)
+        if err != nil {
+            log.Println(&quot;读取数据失败:&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+
+        // 处理消息
+        messageBuffer = handleMessages(client, messageBuffer)
+    }
+}
+
+func handleMessages(client *Client, buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        // 检查是否收到完整的消息
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            // 处理消息
+            handleMessage(client, cmd, messageBody)
+            // 更新缓冲区
+            buffer = buffer[length:]
+        } else {
+            // 消息不完整，等待更多数据
+            break
+        }
+    }
+    return buffer
+}
+
+func writeLoop(client *Client) {
+    for message := range client.send {
+        _, err := client.conn.Write(message)
+        if err != nil {
+            log.Println(&quot;发送消息失败:&quot;, err)
+            return
+        }
+    }
+}
+
+func handleMessage(client *Client, cmd uint32, data []byte) {
+    switch cmd {
+    case 1001: // 登录
+        var loginData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;loginData); err != nil {
+            log.Printf(&quot;解析登录消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到登录消息: %v&quot;, loginData)
+        
+        // 发送响应
+        response := map[string]interface{}{
+            &quot;status&quot;: &quot;success&quot;,
+        }
+        sendMessage(client, 1001, response)
+
+    case 1002: // 玩家移动
+        var moveData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;moveData); err != nil {
+            log.Printf(&quot;解析移动消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到玩家移动消息: %v&quot;, moveData)
+    }
+}
+
+func sendMessage(client *Client, cmd uint32, data interface{}) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        log.Printf(&quot;序列化消息失败: %v&quot;, err)
+        return
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    binary.BigEndian.PutUint32(header[0:4], uint32(HeaderSize+len(jsonData)))
+    binary.BigEndian.PutUint32(header[4:8], cmd)
+
+    // 组合完整消息
+    message := append(header, jsonData...)
+    client.send &lt;- message
+}
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[.gitignore的内容添加]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/gitignore-de-nei-rong-tian-jia/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/gitignore-de-nei-rong-tian-jia/">
+        </link>
+        <updated>2024-12-05T01:44:39.000Z</updated>
+        <content type="html"><![CDATA[<p>-- 忽略单个文件<br>
+filename.txt</p>
+<p>-- 忽略特定扩展名的文件<br>
+*.log<br>
+*.tmp</p>
+<p>-- 忽略特定目录<br>
+node_modules/<br>
+dist/<br>
+<strong>pycache</strong>/</p>
+<p>-- 忽略特定路径的文件<br>
+logs/debug.log<br>
+build/output/</p>
+<p>-- 不忽略特定文件（使用 ! 符号）<br>
+!important.log</p>
+<h2 id="常见示例">常见示例</h2>
+<p>-- Python<br>
+<strong>pycache</strong>/<br>
+*.py[cod]<br>
+*$py.class<br>
+.env<br>
+venv/<br>
+.venv/<br>
+*.pyc</p>
+<p>-- Node.js<br>
+node_modules/<br>
+npm-debug.log<br>
+yarn-debug.log<br>
+yarn-error.log</p>
+<p>-- IDE<br>
+.idea/<br>
+.vscode/<br>
+*.swp<br>
+*.swo</p>
+<p>-- 编译输出<br>
+dist/<br>
+build/<br>
+*.exe<br>
+*.dll<br>
+*.so<br>
+*.dylib</p>
+<p>-- 日志文件<br>
+*.log<br>
+logs/<br>
+log/</p>
+<p>-- 系统文件<br>
+.DS_Store<br>
+Thumbs.db</p>
+<p>-- 配置文件<br>
+config.ini<br>
+settings.json</p>
+<h2 id="如果我想忽略binsrun目录下的文件但是不包括该目录下的startbat和stopbat应该怎么写">如果我想忽略bins/run目录下的文件但是不包括该目录下的start.bat和stop.bat应该怎么写</h2>
+<p>-- 忽略 bins/run 目录下的所有文件<br>
+bins/run/*</p>
+<p>-- 不忽略 start.bat 和 stop.bat<br>
+!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="忽略所有目录下的文件">忽略所有目录下的文件</h3>
+<p>bins/run/*</p>
+<h3 id="不忽略特定文件">不忽略特定文件</h3>
+<p>!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="如果有子目录需要不忽略子目录">如果有子目录，需要不忽略子目录</h3>
+<p>!bins/run/*/</p>
+<h3 id="然后不忽略子目录中的特定文件">然后不忽略子目录中的特定文件</h3>
+<p>!bins/run/<em>/start.bat<br>
+!bins/run/</em>/stop.bat</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[git常用命令]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/git-chang-yong-ming-ling/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/git-chang-yong-ming-ling/">
+        </link>
+        <updated>2024-12-05T01:39:56.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="1-查看修改的文件状态">1. 查看修改的文件状态</h1>
+<pre><code class="language-python">git status                # 查看工作区状态
+git diff                  # 查看具体修改内容
+</code></pre>
+<h1 id="2-添加修改的文件到暂存区">2. 添加修改的文件到暂存区</h1>
+<pre><code class="language-python">git add .                 # 添加所有修改
+git add filename         # 添加特定文件
+git add folder/*         # 添加特定文件夹下所有文件
+</code></pre>
+<h1 id="3-提交修改">3. 提交修改</h1>
+<pre><code class="language-python">git commit -m &quot;提交说明&quot;   # 提交并添加说明
+git commit -am &quot;提交说明&quot;  # 合并 add 和 commit 操作（仅适用于已跟踪的文件）
+</code></pre>
+<h1 id="4-推送到远程仓库">4. 推送到远程仓库</h1>
+<pre><code class="language-python">git push                  # 推送到默认远程分支
+git push origin master    # 推送到 master 分支
+git push origin dev       # 推送到 dev 分支
+git push -u origin branch_name  # 设置上游分支并推送
+</code></pre>
+<h1 id="5其他常用命令">5.其他常用命令</h1>
+<h3 id="拉取远程更新">拉取远程更新</h3>
+<pre><code class="language-python">git pull                  # 拉取并合并远程更新
+</code></pre>
+<h3 id="查看提交历史">查看提交历史</h3>
+<pre><code class="language-python">git log                   # 查看提交历史
+git log --oneline        # 简洁模式查看提交历史
+</code></pre>
+<h3 id="分支操作">分支操作</h3>
+<pre><code class="language-python">git branch               # 查看本地分支
+git branch -r            # 查看远程分支
+git checkout branch_name # 切换分支
+git checkout -b new_branch  # 创建并切换到新分支
+</code></pre>
+<h3 id="撤销操作">撤销操作</h3>
+<pre><code class="language-python">git reset HEAD filename   # 撤销暂存区的修改
+git checkout -- filename  # 撤销工作区的修改
+</code></pre>
+<h3 id="克隆命令">克隆命令</h3>
+<ul>
+<li>基本克隆命令</li>
+</ul>
+<pre><code class="language-python">git clone https://github.com/username/repository.git .
+# 这里注意最后如果跟了一个&quot;.&quot; 则会降仓库的内容克隆到当前目录，如果没有跟，则会将仓库带目录一起克隆到当前目录
+</code></pre>
+<ul>
+<li>
+<p>克隆到指定目录<br>
+<code>git clone repository_url target_directory</code></p>
+</li>
+<li>
+<p>使用SSH地址克隆<br>
+<code>git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>指定SSH密钥克隆<br>
+<code>GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519' git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>克隆指定分支<br>
+<code>git clone -b branch_name repository_url</code></p>
+</li>
+<li>
+<p>克隆特定分支并且只克隆最新的提交<br>
+<code>git clone -b branch_name --single-branch --depth 1 repository_url</code></p>
+</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Chrome插件，抓取网页资源&源码]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/chrome-cha-jian-zhua-qu-wang-ye-zi-yuan-andyuan-ma/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/chrome-cha-jian-zhua-qu-wang-ye-zi-yuan-andyuan-ma/">
+        </link>
+        <updated>2024-12-04T09:00:23.000Z</updated>
+        <content type="html"><![CDATA[<p>插件名：Save All Resources</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Go配置国内镜像源，应对go mod tidy连接报错问题]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/go-pei-zhi-guo-nei-jing-xiang-yuan-ying-dui-go-mod-tidy-lian-jie-bao-cuo-wen-ti/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/go-pei-zhi-guo-nei-jing-xiang-yuan-ying-dui-go-mod-tidy-lian-jie-bao-cuo-wen-ti/">
+        </link>
+        <updated>2024-12-04T08:34:19.000Z</updated>
+        <content type="html"><![CDATA[<p>使用命令行：<br>
+<code>go env -w GOPROXY=https://goproxy.cn,direct</code><br>
+如果是idea：<br>
+打开设置路径下Setting -&gt; Go -&gt; Go Modules<br>
+在Environment中输入： GOPROXY=https://goproxy.cn,direct</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[关于creator3.8打包本地正常，部署githubpages的404报错]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/guan-yu-creator38-da-bao-ben-di-zheng-chang-bu-shu-githubpages-de-404-bao-cuo/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/guan-yu-creator38-da-bao-ben-di-zheng-chang-bu-shu-githubpages-de-404-bao-cuo/">
+        </link>
+        <updated>2024-12-02T02:35:37.000Z</updated>
+        <content type="html"><![CDATA[<p>github pages的jekyll模版会忽略下划线开头的文件，所以要禁用jekyll 禁用方法就是在项目根目录下添加一个空白文件，命名为：.nojekyll</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[如何把工程文件复制到linux的docker容器中]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-he-ba-gong-cheng-wen-jian-fu-zhi-dao-linux-de-docker-rong-qi-zhong/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-he-ba-gong-cheng-wen-jian-fu-zhi-dao-linux-de-docker-rong-qi-zhong/">
+        </link>
+        <updated>2024-11-30T10:39:31.000Z</updated>
+        <content type="html"><![CDATA[<p>要将工程文件复制到 Linux 的 Docker 容器中，可以使用 <code>docker cp</code> 命令。这个命令允许你从主机复制文件或目录到容器中，或者从容器中复制文件或目录到主机中。</p>
+<p>以下是具体步骤和示例：</p>
+<h3 id="步骤-1-启动或获取容器-id">步骤 1: 启动或获取容器 ID</h3>
+<p>首先，确保你的 Docker 容器正在运行。如果容器已经运行，可以使用 <code>docker ps</code> 命令来获取容器 ID 或名称。</p>
+<pre><code class="language-sh">docker ps
+</code></pre>
+<p>这将显示类似以下的输出：</p>
+<pre><code>CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS         PORTS     NAMES
+abcd1234efgh   myimage       &quot;/bin/sh -c 'some_cmd'&quot;  2 minutes ago   Up 2 minutes             mycontainer
+</code></pre>
+<p>记录下你目标容器的 <code>CONTAINER ID</code> 或 <code>NAMES</code>。</p>
+<h3 id="步骤-2-使用-docker-cp-复制文件">步骤 2: 使用 <code>docker cp</code> 复制文件</h3>
+<p>假设你有一个工程目录 <code>/path/to/your/project</code> 在主机上，并且你想复制到容器中的 <code>/app</code> 目录。使用以下命令：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+<p>或者，如果你使用容器名称：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project mycontainer:/app
+</code></pre>
+<h3 id="示例">示例</h3>
+<ol>
+<li>
+<p><strong>复制整个目录</strong>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+</li>
+<li>
+<p><strong>复制单个文件</strong>：</p>
+<p>如果你只想复制单个文件，例如 <code>/path/to/your/project/file.txt</code>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project/file.txt abcd1234efgh:/app/file.txt
+</code></pre>
+</li>
+</ol>
+<h3 id="检查复制结果">检查复制结果</h3>
+<p>进入容器并检查文件是否复制成功：</p>
+<pre><code class="language-sh">docker exec -it abcd1234efgh /bin/bash
+</code></pre>
+<p>然后导航到目标目录 <code>/app</code>，确认文件或目录已经复制成功。</p>
+<pre><code class="language-sh">cd /app
+ls -la
+</code></pre>
+<h3 id="其他常用选项">其他常用选项</h3>
+<ul>
+<li>
+<p><strong>从容器复制到主机</strong>：</p>
+<p>假设你要将容器中的 <code>/app/project</code> 目录复制到主机上的 <code>/path/to/backup</code>：</p>
+<pre><code class="language-sh">docker cp abcd1234efgh:/app/project /path/to/backup
+</code></pre>
+</li>
+</ul>
+<h3 id="注意事项">注意事项</h3>
+<ul>
+<li><strong>权限问题</strong>：确保主机上和容器内的目标目录具有适当的权限，否则可能会导致文件无法访问或复制失败。</li>
+<li><strong>路径准确性</strong>：确保使用绝对路径，并且容器内的目标路径存在或可以创建。</li>
+</ul>
+<p>通过这些步骤和示例，你可以轻松地将工程文件复制到 Linux 的 Docker 容器中，或从容器中复制文件到主机。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[如何在debian系统中安装python3.8.3，以及创建虚拟环境]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-he-zai-debian-xi-tong-zhong-an-zhuang-python383yi-ji-chuang-jian-xu-ni-huan-jing/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-he-zai-debian-xi-tong-zhong-an-zhuang-python383yi-ji-chuang-jian-xu-ni-huan-jing/">
+        </link>
+        <updated>2024-11-30T10:39:20.000Z</updated>
+        <content type="html"><![CDATA[<p>在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境，可以通过以下步骤完成。</p>
+<h3 id="步骤-1-更新包列表">步骤 1: 更新包列表</h3>
+<p>首先，更新你的包列表以确保你有最新的可用软件包信息。</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+<h3 id="步骤-2-安装依赖项">步骤 2: 安装依赖项</h3>
+<p>安装编译 Python 所需的依赖项。</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+<h3 id="步骤-3-下载-python-383-源码">步骤 3: 下载 Python 3.8.3 源码</h3>
+<p>从 Python 官方网站下载 Python 3.8.3 的源码。</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-4-解压源码文件">步骤 4: 解压源码文件</h3>
+<p>解压下载的源码文件。</p>
+<pre><code class="language-sh">tar -xf Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-5-编译和安装-python-383">步骤 5: 编译和安装 Python 3.8.3</h3>
+<p>进入解压后的目录，并配置、编译和安装 Python。</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+<p>使用 <code>make altinstall</code> 而不是 <code>make install</code> 以避免覆盖系统默认的 Python 版本。</p>
+<h3 id="步骤-6-验证安装">步骤 6: 验证安装</h3>
+<p>检查 Python 3.8.3 是否安装成功。</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+<p>应该会看到类似以下的输出：</p>
+<pre><code>Python 3.8.3
+</code></pre>
+<h3 id="步骤-7-安装-virtualenv">步骤 7: 安装 <code>virtualenv</code></h3>
+<p>安装 <code>virtualenv</code> 以便创建虚拟环境。</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+<h3 id="步骤-8-创建虚拟环境">步骤 8: 创建虚拟环境</h3>
+<p>创建一个新的虚拟环境。假设你要在 <code>~/myproject</code> 目录中创建一个虚拟环境。</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+</code></pre>
+<h3 id="步骤-9-激活虚拟环境">步骤 9: 激活虚拟环境</h3>
+<p>激活虚拟环境以开始使用它。</p>
+<pre><code class="language-sh">source ~/myproject/venv/bin/activate
+</code></pre>
+<p>你应该会看到你的 shell 提示符发生变化，显示虚拟环境的名称，这表示虚拟环境已激活。</p>
+<h3 id="步骤-10-安装所需的包">步骤 10: 安装所需的包</h3>
+<p>在虚拟环境中安装你需要的 Python 包。你可以使用 <code>pip</code> 来安装包，例如：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<ol>
+<li>
+<p>更新包列表：</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+</li>
+<li>
+<p>安装依赖项：</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+</li>
+<li>
+<p>下载和解压 Python 3.8.3 源码：</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+tar -xf Python-3.8.3.tgz
+</code></pre>
+</li>
+<li>
+<p>编译和安装 Python 3.8.3：</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+</li>
+<li>
+<p>验证安装：</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+</li>
+<li>
+<p>安装 <code>virtualenv</code>：</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+</li>
+<li>
+<p>创建并激活虚拟环境：</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+source ~/myproject/venv/bin/activate
+</code></pre>
+</li>
+<li>
+<p>在虚拟环境中安装包：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+</li>
+</ol>
+<p>通过这些步骤，你就可以在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境了。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[将 Docker 容器保存为镜像并上传到 Docker Hub]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/jiang-docker-rong-qi-bao-cun-wei-jing-xiang-bing-shang-chuan-dao-docker-hub/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/jiang-docker-rong-qi-bao-cun-wei-jing-xiang-bing-shang-chuan-dao-docker-hub/">
+        </link>
+        <updated>2024-11-30T10:39:11.000Z</updated>
+        <content type="html"><![CDATA[<p>要将 Docker 容器保存为镜像并上传到 Docker Hub，你可以按照以下步骤操作：</p>
+<h3 id="步骤-1-提交容器为镜像">步骤 1: 提交容器为镜像</h3>
+<p>假设你的容器名称或 ID 是 <code>my_container</code>，你可以使用 <code>docker commit</code> 命令将其保存为一个新的镜像。以下是将容器保存为镜像的示例：</p>
+<pre><code class="language-sh">docker commit my_container my_username/my_image_name:tag
+</code></pre>
+<ul>
+<li><code>my_container</code>: 容器的名称或 ID。</li>
+<li><code>my_username/my_image_name:tag</code>: 创建的镜像名称和标签（<code>tag</code> 是可选的，默认是 <code>latest</code>）。</li>
+</ul>
+<h3 id="步骤-2-登录-docker-hub">步骤 2: 登录 Docker Hub</h3>
+<p>确保你已经在 Docker Hub 上有一个帐户。如果没有，请访问 <a href="https://hub.docker.com">Docker Hub</a> 注册一个帐户。</p>
+<p>然后，在命令行中登录到 Docker Hub：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+<p>系统会提示你输入 Docker Hub 的用户名和密码。</p>
+<h3 id="步骤-3-推送镜像到-docker-hub">步骤 3: 推送镜像到 Docker Hub</h3>
+<p>使用 <code>docker push</code> 命令将镜像上传到 Docker Hub。确保镜像名称和标签与之前 <code>docker commit</code> 创建的镜像一致。</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:tag
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<p>假设你的 Docker Hub 用户名是 <code>my_username</code>，容器 ID 是 <code>abcd1234efgh</code>，并且你希望将其保存为镜像 <code>my_image_name</code> 并标记为 <code>v1</code>：</p>
+<ol>
+<li>
+<p><strong>提交容器为镜像</strong>：</p>
+<pre><code class="language-sh">docker commit abcd1234efgh my_username/my_image_name:v1
+</code></pre>
+</li>
+<li>
+<p><strong>登录 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+</li>
+<li>
+<p><strong>推送镜像到 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:v1
+</code></pre>
+</li>
+</ol>
+<h3 id="示例操作">示例操作</h3>
+<p>以下是完整操作的命令行输出示例：</p>
+<pre><code class="language-sh"># 提交容器为镜像
+docker commit abcd1234efgh my_username/my_image_name:v1
+# 成功返回的镜像 ID
+sha256:3b9ac9e09b8a9f9d9b4c1f6390a2c1e0b4c5a1e2f8e8f9b8b7a0e8c1b9a0e1c2
+
+# 登录 Docker Hub
+docker login
+# 提示输入用户名和密码
+Username: my_username
+Password:
+
+# 推送镜像到 Docker Hub
+docker push my_username/my_image_name:v1
+# 推送成功的输出
+The push refers to repository [docker.io/my_username/my_image_name]
+v1: digest: sha256:9b9c1e1a1b1c2d1e2f3e4g5h6i7j8k9l0m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5 size: 1234
+</code></pre>
+<h3 id="注意事项">注意事项</h3>
+<ol>
+<li><strong>命名规范</strong>：确保镜像名称遵循 Docker Hub 的命名规范，通常是 <code>username/repository:tag</code> 的格式。</li>
+<li><strong>权限</strong>：确保你的 Docker Hub 账户有权推送到指定的镜像库。</li>
+<li><strong>私有仓库</strong>：如果你的 Docker Hub 仓库是私有的，确保你的账户有相应的权限访问和推送。</li>
+</ol>
+<p>通过这些步骤，你可以将 Docker 容器保存为镜像并上传到 Docker Hub 的镜像库中。</p>
+]]></content>
+    </entry>
+</feed>
