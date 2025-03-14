@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://xusang-zh.github.io/myblog/</id>
+    <title>xs&amp;zh</title>
+    <updated>2025-03-14T10:17:21.108Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://xusang-zh.github.io/myblog/"/>
+    <link rel="self" href="https://xusang-zh.github.io/myblog/atom.xml"/>
+    <subtitle>xs&amp;zh的小窝窝</subtitle>
+    <logo>https://xusang-zh.github.io/myblog/images/avatar.png</logo>
+    <icon>https://xusang-zh.github.io/myblog/favicon.ico</icon>
+    <rights>All rights reserved 2025, xs&amp;zh</rights>
+    <entry>
+        <title type="html"><![CDATA[Go实现wss的服务端和客户端]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/go-shi-xian-wss-de-fu-wu-duan-he-ke-hu-duan/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/go-shi-xian-wss-de-fu-wu-duan-he-ke-hu-duan/">
+        </link>
+        <updated>2025-03-14T10:07:25.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="服务端"><strong>服务端</strong></h2>
+<pre><code class="language-go">package main
+
+import (
+	&quot;log&quot;
+	&quot;net/http&quot;
+
+	&quot;github.com/gorilla/websocket&quot;
+)
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true // 允许所有跨域请求
+	},
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(&quot;WebSocket 升级失败:&quot;, err)
+		return
+	}
+	defer conn.Close()
+	log.Println(&quot;客户端已连接&quot;)
+
+	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(&quot;读取消息失败:&quot;, err)
+			break
+		}
+		log.Printf(&quot;收到消息: %s\n&quot;, message)
+		conn.WriteMessage(websocket.TextMessage, message)
+	}
+}
+
+func main() {
+	http.HandleFunc(&quot;/&quot;, handleWebSocket)
+	log.Println(&quot;WSS 服务已启动，端口: 8080&quot;)
+	if err := http.ListenAndServeTLS(&quot;:8080&quot;, &quot;cert.pem&quot;, &quot;key.pem&quot;, nil); err != nil {
+		log.Fatal(&quot;服务启动失败:&quot;, err)
+	}
+}
+</code></pre>
+<h2 id="客户端"><strong>客户端</strong></h2>
+<pre><code class="language-go">package main
+
+import (
+	&quot;crypto/tls&quot;
+	&quot;crypto/x509&quot;
+	&quot;io/ioutil&quot;
+	&quot;log&quot;
+	&quot;time&quot;
+
+	&quot;github.com/gorilla/websocket&quot;
+)
+
+func main() {
+	// WSS 服务器地址
+	url := &quot;wss://example.com/&quot;
+
+	// 加载 CA 证书
+	caCert, err := ioutil.ReadFile(&quot;ca.crt&quot;)
+	if err != nil {
+		log.Fatal(&quot;读取 CA 证书失败:&quot;, err)
+	}
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	// 配置 TLS
+	dialer := websocket.Dialer{
+		TLSClientConfig: &amp;tls.Config{
+			RootCAs: caCertPool, // 设置 CA 证书
+		},
+	}
+
+	// 连接到 WSS 服务器
+	conn, _, err := dialer.Dial(url, nil)
+	if err != nil {
+		log.Fatal(&quot;连接失败:&quot;, err)
+	}
+	defer conn.Close()
+	log.Println(&quot;已连接到 WSS 服务器&quot;)
+
+	// 发送消息
+	message := []byte(&quot;Hello, WSS Server!&quot;)
+	if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+		log.Fatal(&quot;发送消息失败:&quot;, err)
+	}
+	log.Printf(&quot;发送消息: %s\n&quot;, message)
+
+	// 接收消息
+	_, response, err := conn.ReadMessage()
+	if err != nil {
+		log.Fatal(&quot;接收消息失败:&quot;, err)
+	}
+	log.Printf(&quot;收到消息: %s\n&quot;, response)
+
+	// 保持连接
+	for {
+		time.Sleep(1 * time.Second)
+	}
+}
+</code></pre>
+<h3 id="代码说明"><strong>代码说明</strong></h3>
+<ol>
+<li>加载 CA 证书：
+<ul>
+<li>使用 ioutil.ReadFile 读取 CA 证书文件（如 ca.crt）。</li>
+<li>将 CA 证书添加到 x509.CertPool 中。</li>
+</ul>
+</li>
+<li>配置 TLS：
+<ul>
+<li>在 websocket.Dialer 中配置 TLSClientConfig，设置 RootCAs 为加载的 CA 证书池。</li>
+<li>这样客户端会验证服务器证书是否由指定的 CA 签发。</li>
+</ul>
+</li>
+<li>连接服务器：
+<ul>
+<li>使用 dialer.Dial 连接到 WSS 服务器。</li>
+<li>如果服务器证书无效或不被信任，连接会失败。</li>
+</ul>
+</li>
+<li>发送和接收消息：
+<ul>
+<li>使用 conn.WriteMessage 发送消息。</li>
+<li>使用 conn.ReadMessage 接收消息。</li>
+</ul>
+</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[windows下生成ssl的SAN证书（go1.17以后强制使用SANs证书）]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/windows-xia-sheng-cheng-ssl-de-san-zheng-shu-go117-yi-hou-qiang-zhi-shi-yong-sans-zheng-shu/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/windows-xia-sheng-cheng-ssl-de-san-zheng-shu-go117-yi-hou-qiang-zhi-shi-yong-sans-zheng-shu/">
+        </link>
+        <updated>2025-03-14T09:55:30.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="一-安装-openssl略过"><strong>一. 安装 OpenSSL（略过）</strong></h3>
+<h3 id="二-生成-san-证书"><strong>二. 生成 SAN 证书</strong></h3>
+<p><strong>1） 创建OpenSSl配置文件</strong><br>
+OpenSSL 默认不会在证书中包含 SAN 字段，需要手动创建配置文件。</p>
+<ul>
+<li>创建一个文本文件，命名为 <code>openssl.cnf</code></li>
+<li>将以下内容复制到文件中：</li>
+</ul>
+<pre><code class="language-bash">[ req ]
+default_bits       = 2048
+default_md         = sha256
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+
+[ req_distinguished_name ]
+countryName                = Country Name (2 letter code)
+countryName_default        = CN
+stateOrProvinceName        = State or Province Name (full name)
+stateOrProvinceName_default = Beijing
+localityName               = Locality Name (eg, city)
+localityName_default       = Beijing
+organizationName           = Organization Name (eg, company)
+organizationName_default   = Example Inc.
+commonName                 = Common Name (e.g. server FQDN or YOUR name)
+commonName_max             = 64
+commonName_default         = example.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = example.com
+DNS.2 = www.example.com
+IP.1  = 192.168.1.1
+</code></pre>
+<p><strong>2）生成私钥</strong><br>
+运行以下命令生成私钥：</p>
+<pre><code class="language-bash">openssl genpkey -algorithm RSA -out key.pem
+</code></pre>
+<p><strong>3）生成证书签名请求（CSR）</strong><br>
+运行以下命令生成CSR：</p>
+<pre><code class="language-bash">openssl req -new -key key.pem -out csr.pem -config openssl.cnf
+</code></pre>
+<blockquote>
+<p>按照提示输入信息，或直接按回车使用配置文件中定义的默认值。</p>
+</blockquote>
+<p><strong>4）生成自签名证书</strong><br>
+运行以下命令生成签名证书：</p>
+<pre><code class="language-bash">openssl x509 -req -in csr.pem -signkey key.pem -out cert.pem -days 365 -extensions req_ext -extfile openssl.cnf
+</code></pre>
+<h3 id="三-验证证书"><strong>三. 验证证书</strong></h3>
+<p>运行以下命令验证生成的证书是否包含SAN字段：</p>
+<pre><code class="language-bash">openssl x509 -in cert.pem -text -noout
+</code></pre>
+<p>输出中应包含类似以下内容：</p>
+<pre><code class="language-bash">X509v3 Subject Alternative Name:
+    DNS:example.com, DNS:www.example.com, IP Address:192.168.1.1
+</code></pre>
+<h3 id="四-使用证书"><strong>四. 使用证书</strong></h3>
+<p>将生成的 <code>cert.pem</code>（证书）和 <code>key.pem</code>（私钥）用于你的应用程序（如 Web 服务器）</p>
+<blockquote>
+<p>客户端可以访问https://的服务器地址，然后点地址栏前的锁，点详情来查看证书并导出使用</p>
+</blockquote>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[linux部署golang服务端流程]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/linux-bu-shu-golang-fu-wu-duan-liu-cheng/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/linux-bu-shu-golang-fu-wu-duan-liu-cheng/">
+        </link>
+        <updated>2025-03-12T08:12:33.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1首先需要安装相关环境">1.首先需要安装相关环境</h2>
+<ul>
+<li>mysql</li>
+<li>redis</li>
+<li>memcached</li>
+<li>python 3.8.x</li>
+<li>go 1.18</li>
+</ul>
+<h2 id="2编译各个服务端工程并复制相关文件到服务器">2.编译各个服务端工程，并复制相关文件到服务器</h2>
+<pre><code class="language-bash">set GOROOT=C:\Program Files\Go
+set GOARCH=amd64
+set GOOS=linux
+cd ./c_ConfigServer #这里需要注意，得进入到项目.mod所在目录，下面的build命令才不会报错
+go build -o ../bins/run_linux/configSvr ./cmd/main.go
+...
+
+# 复制到服务器
+scp -r ./bins/config/* root@x.x.x.x:/game/server/config/
+scp -r ./bins/run_linux/* root@x.x.x.x:/game/server/run/
+</code></pre>
+<h2 id="3到服务器上启动进程">3.到服务器上启动进程</h2>
+<p>可以使用sh脚本，先检查进程是否启动并kill，然后依次重新启动进程，必须先启动config和post两个服务</p>
+<pre><code class="language-bash">#!/bin/bash
+
+# 定义进程名称列表
+process_names=(&quot;configSvr&quot; &quot;postSvr&quot; &quot;aaSvr&quot; &quot;abSvr&quot; &quot;acSvr&quot; &quot;adSvr&quot; &quot;aeSvr&quot;)
+
+# 杀掉所有同名进程
+for name in &quot;${process_names[@]}&quot;; do
+    # 检查进程是否存在
+    pids=$(pgrep -f &quot;$name&quot;)
+    if [ -n &quot;$pids&quot; ]; then
+        echo &quot;Killing processes for $name: $pids&quot;
+        pkill -f &quot;$name&quot;
+    else
+        echo &quot;No processes found for $name&quot;
+    fi
+done
+
+# 依次启动进程，每个间隔 5 秒
+for name in &quot;${process_names[@]}&quot;; do
+    echo &quot;Starting $name...&quot;
+    nohup ./&quot;$name&quot; &gt; &quot;${name}.log&quot; 2&gt;&amp;1 &amp;
+    sleep 5
+done
+
+echo &quot;All processes started.&quot;
+</code></pre>
+<p>然后再启动，api和hotupdate服务<br>
+<code>注意：hotupdate服务启动进入到脚本所在目录，否则会有请求静态文件时404的问题</code></p>
+<p>最后视情况是否启动日志服务</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[徐宛布辅食记录]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/xu-wan-bu-fu-shi-ji-lu/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/xu-wan-bu-fu-shi-ji-lu/">
+        </link>
+        <updated>2024-12-16T02:08:27.000Z</updated>
+        <content type="html"><![CDATA[<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>添加辅食</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>12月15日</td>
+<td>猪肝</td>
+<td></td>
+</tr>
+<tr>
+<td>12月16日</td>
+<td>猪肝</td>
+<td></td>
+</tr>
+<tr>
+<td>12月17日</td>
+<td>猪肝</td>
+<td></td>
+</tr>
+<tr>
+<td>12月18日</td>
+<td>猪肉</td>
+<td></td>
+</tr>
+<tr>
+<td>12月19日</td>
+<td>猪肉</td>
+<td></td>
+</tr>
+<tr>
+<td>12月20日</td>
+<td>猪肉</td>
+<td></td>
+</tr>
+<tr>
+<td>12月21日</td>
+<td>西兰花</td>
+<td></td>
+</tr>
+<tr>
+<td>12月22日</td>
+<td>西兰花</td>
+<td></td>
+</tr>
+<tr>
+<td>12月23日</td>
+<td>西兰花</td>
+<td></td>
+</tr>
+<tr>
+<td>12月24日</td>
+<td>胡萝卜</td>
+<td></td>
+</tr>
+<tr>
+<td>12月25日</td>
+<td>胡萝卜</td>
+<td></td>
+</tr>
+<tr>
+<td>12月26日</td>
+<td>胡萝卜</td>
+<td></td>
+</tr>
+<tr>
+<td>12月27日</td>
+<td>未知</td>
+<td>打疫苗，好像没吃辅食</td>
+</tr>
+<tr>
+<td>12月28日</td>
+<td>未知</td>
+<td></td>
+</tr>
+<tr>
+<td>12月29日</td>
+<td>未知</td>
+<td></td>
+</tr>
+<tr>
+<td>12月30日</td>
+<td>未知</td>
+<td></td>
+</tr>
+<tr>
+<td>12月31日</td>
+<td>菠菜</td>
+<td>伴着米糊吃了几口，不肯吃，不确定是否起疹子</td>
+</tr>
+<tr>
+<td>2025年1月1日</td>
+<td>菠菜</td>
+<td>纯菠菜吃了3、4口，下午吃了之后晚上身上发了很多湿疹，怀疑过敏</td>
+</tr>
+<tr>
+<td>2025年1月2日</td>
+<td>无</td>
+<td></td>
+</tr>
+<tr>
+<td>2025年1月3日</td>
+<td>无</td>
+<td></td>
+</tr>
+<tr>
+<td>2025年1月4日</td>
+<td>无</td>
+<td>晚上妈妈洗澡，哭闹吃了点米糊</td>
+</tr>
+<tr>
+<td>2025年1月5日</td>
+<td>胡萝卜+猪肉</td>
+<td></td>
+</tr>
+<tr>
+<td>2025年1月6日</td>
+<td>地瓜</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[如果github下的多个仓库对应多个密钥，如何在windows的.ssh中配置不同的仓库使用不同的密钥]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ru-guo-github-xia-de-duo-ge-cang-ku-dui-ying-duo-ge-mi-yao-ru-he-zai-windows-de-ssh-zhong-pei-zhi-bu-tong-de-cang-ku-shi-yong-bu-tong-de-mi-yao/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ru-guo-github-xia-de-duo-ge-cang-ku-dui-ying-duo-ge-mi-yao-ru-he-zai-windows-de-ssh-zhong-pei-zhi-bu-tong-de-cang-ku-shi-yong-bu-tong-de-mi-yao/">
+        </link>
+        <updated>2024-12-05T08:48:44.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="0创建公钥命令">0.创建公钥命令</h3>
+<pre><code class="language-bash">ssh-keygen -m PEM -t ed25519 -C &quot;your.email@example.com&quot; -f yourfilename  #自定义名称
+</code></pre>
+<h3 id="1-创建编辑-ssh-配置文件">1. 创建/编辑 SSH 配置文件</h3>
+<pre><code class="language-bash"># 在 C:\Users\YourUsername\.ssh\config 中配置
+# 如果文件不存在，创建它
+
+# GitHub 仓库1
+Host git-repo1 # 自定义的主机名称，后面设置仓库远程地址的时候用
+    HostName github.com  # 如果是其他仓库，换成仓库对应的域名，如：e.coding.net
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo1
+
+# GitHub 仓库2
+Host git-repo2
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo2
+
+# GitHub 仓库3
+Host git-repo3
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo3
+</code></pre>
+<h3 id="2-配置仓库远程地址">2. 配置仓库远程地址</h3>
+<pre><code class="language-bash"># 仓库1
+git remote set-url origin git@git-repo1:username/repo1.git # 前面配置的Host在这里用，替换仓库地址中对应的HostName
+
+# 仓库2
+git remote set-url origin git@git-repo2:username/repo2.git
+
+# 仓库3
+git remote set-url origin git@git-repo3:username/repo3.git
+</code></pre>
+<h3 id="4-验证配置">4. 验证配置</h3>
+<pre><code class="language-bash"># 测试仓库1的连接
+ssh -T git@git-repo1
+
+# 测试仓库2的连接
+ssh -T git@git-repo2
+
+# 测试仓库3的连接
+ssh -T git@git-repo3
+</code></pre>
+<h3 id="5-克隆和使用">5. 克隆和使用</h3>
+<pre><code class="language-bash"># 克隆个人仓库
+git clone git@git-repo1:username/repo1.git
+
+# 克隆工作仓库
+git clone git@git-repo2:username/repo2.git
+
+# 克隆项目仓库
+git clone git@git-repo3:username/repo3.git
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[h5游戏的客户端和服务端之间的通信，是用websocket还是tcp]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/h5-you-xi-de-ke-hu-duan-he-fu-wu-duan-zhi-jian-de-tong-xin-shi-yong-websocket-huan-shi-tcp/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/h5-you-xi-de-ke-hu-duan-he-fu-wu-duan-zhi-jian-de-tong-xin-shi-yong-websocket-huan-shi-tcp/">
+        </link>
+        <updated>2024-12-05T01:53:43.000Z</updated>
+        <content type="html"><![CDATA[<p>对于 H5 游戏来说，由于浏览器不能直接使用 TCP，我们需要在服务端提供一个 WebSocket 服务作为代理，然后再通过 TCP 连接到游戏服务器</p>
+<ul>
+<li>首先是浏览器端的 WebSocket 客户端代码：</li>
+</ul>
+<pre><code class="language-typescript">interface Message {
+    cmd: number;
+    data: any;
+}
+
+export class GameSocket {
+    private ws: WebSocket;
+    private messageHandlers: Map&lt;number, (data: any) =&gt; void&gt;;
+
+    constructor(wsUrl: string) {
+        this.messageHandlers = new Map();
+        this.ws = new WebSocket(wsUrl);
+        this.initWebSocket();
+    }
+
+    private initWebSocket() {
+        this.ws.onopen = () =&gt; {
+            console.log('WebSocket连接成功');
+            // 发送登录消息
+            this.send(1001, { userId: '123' });
+        };
+
+        this.ws.onmessage = (event) =&gt; {
+            const message: Message = JSON.parse(event.data);
+            this.handleMessage(message);
+        };
+
+        this.ws.onclose = () =&gt; {
+            console.log('WebSocket连接关闭');
+            // 可以实现重连逻辑
+        };
+
+        this.ws.onerror = (error) =&gt; {
+            console.error('WebSocket错误:', error);
+        };
+    }
+
+    public on(cmd: number, handler: (data: any) =&gt; void) {
+        this.messageHandlers.set(cmd, handler);
+    }
+
+    public send(cmd: number, data: any) {
+        const message: Message = { cmd, data };
+        this.ws.send(JSON.stringify(message));
+    }
+
+    private handleMessage(message: Message) {
+        const handler = this.messageHandlers.get(message.cmd);
+        if (handler) {
+            handler(message.data);
+        }
+    }
+}
+
+// 使用示例
+const gameSocket = new GameSocket('ws://localhost:8080/ws');
+
+gameSocket.on(1002, (data) =&gt; {
+    console.log('收到游戏消息:', data);
+});
+</code></pre>
+<ul>
+<li>WebSocket 代理服务器（Go）：</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+    &quot;net/http&quot;
+    &quot;sync&quot;
+
+    &quot;github.com/gorilla/websocket&quot;
+)
+
+const (
+    HeaderSize = 8
+    TCPServerAddr = &quot;localhost:9000&quot;  // TCP游戏服务器地址
+)
+
+// WebSocket升级器
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
+}
+
+// 代理连接
+type ProxyConnection struct {
+    wsConn  *websocket.Conn
+    tcpConn net.Conn
+    mutex   sync.Mutex
+}
+
+type Message struct {
+    Cmd  int         `json:&quot;cmd&quot;`
+    Data interface{} `json:&quot;data&quot;`
+}
+
+func main() {
+    http.HandleFunc(&quot;/ws&quot;, handleWebSocket)
+    log.Printf(&quot;WebSocket代理服务器启动在 :8080&quot;)
+    log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+    wsConn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Printf(&quot;WebSocket升级失败: %v&quot;, err)
+        return
+    }
+    defer wsConn.Close()
+
+    // 连接TCP服务器
+    tcpConn, err := net.Dial(&quot;tcp&quot;, TCPServerAddr)
+    if err != nil {
+        log.Printf(&quot;连接TCP服务器失败: %v&quot;, err)
+        return
+    }
+    defer tcpConn.Close()
+
+    proxy := &amp;ProxyConnection{
+        wsConn:  wsConn,
+        tcpConn: tcpConn,
+    }
+
+    // 启动转发协程
+    go proxy.wsToTcp()
+    proxy.tcpToWs()
+}
+
+// WebSocket -&gt; TCP
+func (p *ProxyConnection) wsToTcp() {
+    for {
+        // 读取WebSocket消息
+        _, wsData, err := p.wsConn.ReadMessage()
+        if err != nil {
+            log.Printf(&quot;读取WebSocket消息失败: %v&quot;, err)
+            return
+        }
+
+        // 解析WebSocket消息
+        var msg Message
+        if err := json.Unmarshal(wsData, &amp;msg); err != nil {
+            log.Printf(&quot;解析WebSocket消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 转换为TCP消息格式
+        tcpMsg, err := createTCPMessage(msg.Cmd, msg.Data)
+        if err != nil {
+            log.Printf(&quot;创建TCP消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 发送到TCP服务器
+        p.mutex.Lock()
+        _, err = p.tcpConn.Write(tcpMsg)
+        p.mutex.Unlock()
+        if err != nil {
+            log.Printf(&quot;发送TCP消息失败: %v&quot;, err)
+            return
+        }
+    }
+}
+
+// TCP -&gt; WebSocket
+func (p *ProxyConnection) tcpToWs() {
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        // 读取TCP消息
+        n, err := p.tcpConn.Read(buffer)
+        if err != nil {
+            log.Printf(&quot;读取TCP消息失败: %v&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+        messageBuffer = p.handleTCPMessages(messageBuffer)
+    }
+}
+
+func (p *ProxyConnection) handleTCPMessages(buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            
+            // 解析TCP消息体
+            var data interface{}
+            if err := json.Unmarshal(messageBody, &amp;data); err != nil {
+                log.Printf(&quot;解析TCP消息体失败: %v&quot;, err)
+                buffer = buffer[length:]
+                continue
+            }
+
+            // 转换为WebSocket消息
+            wsMsg := Message{
+                Cmd:  int(cmd),
+                Data: data,
+            }
+
+            // 发送WebSocket消息
+            p.mutex.Lock()
+            err := p.wsConn.WriteJSON(wsMsg)
+            p.mutex.Unlock()
+            if err != nil {
+                log.Printf(&quot;发送WebSocket消息失败: %v&quot;, err)
+                return buffer
+            }
+
+            buffer = buffer[length:]
+        } else {
+            break
+        }
+    }
+    return buffer
+}
+
+func createTCPMessage(cmd int, data interface{}) ([]byte, error) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        return nil, err
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    messageLength := HeaderSize + len(jsonData)
+    binary.BigEndian.PutUint32(header[0:4], uint32(messageLength))
+    binary.BigEndian.PutUint32(header[4:8], uint32(cmd))
+
+    // 组合完整消息
+    return append(header, jsonData...), nil
+}
+</code></pre>
+<ul>
+<li>TCP 游戏服务器</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+)
+
+// 消息头部大小（4字节长度 + 4字节命令号）
+const HeaderSize = 8
+
+// Client 客户端连接
+type Client struct {
+    conn net.Conn
+    send chan []byte
+}
+
+// Message 消息结构
+type Message struct {
+    Length uint32
+    Cmd    uint32
+    Data   []byte
+}
+
+func main() {
+    listener, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+    if err != nil {
+        log.Fatal(&quot;监听端口失败:&quot;, err)
+    }
+    defer listener.Close()
+
+    log.Println(&quot;服务器启动在 :8080&quot;)
+
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Println(&quot;接受连接失败:&quot;, err)
+            continue
+        }
+
+        client := &amp;Client{
+            conn: conn,
+            send: make(chan []byte, 256),
+        }
+
+        go handleConnection(client)
+    }
+}
+
+func handleConnection(client *Client) {
+    defer client.conn.Close()
+
+    // 启动发送协程
+    go writeLoop(client)
+
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        n, err := client.conn.Read(buffer)
+        if err != nil {
+            log.Println(&quot;读取数据失败:&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+
+        // 处理消息
+        messageBuffer = handleMessages(client, messageBuffer)
+    }
+}
+
+func handleMessages(client *Client, buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        // 检查是否收到完整的消息
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            // 处理消息
+            handleMessage(client, cmd, messageBody)
+            // 更新缓冲区
+            buffer = buffer[length:]
+        } else {
+            // 消息不完整，等待更多数据
+            break
+        }
+    }
+    return buffer
+}
+
+func writeLoop(client *Client) {
+    for message := range client.send {
+        _, err := client.conn.Write(message)
+        if err != nil {
+            log.Println(&quot;发送消息失败:&quot;, err)
+            return
+        }
+    }
+}
+
+func handleMessage(client *Client, cmd uint32, data []byte) {
+    switch cmd {
+    case 1001: // 登录
+        var loginData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;loginData); err != nil {
+            log.Printf(&quot;解析登录消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到登录消息: %v&quot;, loginData)
+        
+        // 发送响应
+        response := map[string]interface{}{
+            &quot;status&quot;: &quot;success&quot;,
+        }
+        sendMessage(client, 1001, response)
+
+    case 1002: // 玩家移动
+        var moveData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;moveData); err != nil {
+            log.Printf(&quot;解析移动消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到玩家移动消息: %v&quot;, moveData)
+    }
+}
+
+func sendMessage(client *Client, cmd uint32, data interface{}) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        log.Printf(&quot;序列化消息失败: %v&quot;, err)
+        return
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    binary.BigEndian.PutUint32(header[0:4], uint32(HeaderSize+len(jsonData)))
+    binary.BigEndian.PutUint32(header[4:8], cmd)
+
+    // 组合完整消息
+    message := append(header, jsonData...)
+    client.send &lt;- message
+}
+}
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[.gitignore的内容添加]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/gitignore-de-nei-rong-tian-jia/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/gitignore-de-nei-rong-tian-jia/">
+        </link>
+        <updated>2024-12-05T01:44:39.000Z</updated>
+        <content type="html"><![CDATA[<p>-- 忽略单个文件<br>
+filename.txt</p>
+<p>-- 忽略特定扩展名的文件<br>
+*.log<br>
+*.tmp</p>
+<p>-- 忽略特定目录<br>
+node_modules/<br>
+dist/<br>
+<strong>pycache</strong>/</p>
+<p>-- 忽略特定路径的文件<br>
+logs/debug.log<br>
+build/output/</p>
+<p>-- 不忽略特定文件（使用 ! 符号）<br>
+!important.log</p>
+<h2 id="常见示例">常见示例</h2>
+<p>-- Python<br>
+<strong>pycache</strong>/<br>
+*.py[cod]<br>
+*$py.class<br>
+.env<br>
+venv/<br>
+.venv/<br>
+*.pyc</p>
+<p>-- Node.js<br>
+node_modules/<br>
+npm-debug.log<br>
+yarn-debug.log<br>
+yarn-error.log</p>
+<p>-- IDE<br>
+.idea/<br>
+.vscode/<br>
+*.swp<br>
+*.swo</p>
+<p>-- 编译输出<br>
+dist/<br>
+build/<br>
+*.exe<br>
+*.dll<br>
+*.so<br>
+*.dylib</p>
+<p>-- 日志文件<br>
+*.log<br>
+logs/<br>
+log/</p>
+<p>-- 系统文件<br>
+.DS_Store<br>
+Thumbs.db</p>
+<p>-- 配置文件<br>
+config.ini<br>
+settings.json</p>
+<h2 id="如果我想忽略binsrun目录下的文件但是不包括该目录下的startbat和stopbat应该怎么写">如果我想忽略bins/run目录下的文件但是不包括该目录下的start.bat和stop.bat应该怎么写</h2>
+<p>-- 忽略 bins/run 目录下的所有文件<br>
+bins/run/*</p>
+<p>-- 不忽略 start.bat 和 stop.bat<br>
+!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="忽略所有目录下的文件">忽略所有目录下的文件</h3>
+<p>bins/run/*</p>
+<h3 id="不忽略特定文件">不忽略特定文件</h3>
+<p>!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="如果有子目录需要不忽略子目录">如果有子目录，需要不忽略子目录</h3>
+<p>!bins/run/*/</p>
+<h3 id="然后不忽略子目录中的特定文件">然后不忽略子目录中的特定文件</h3>
+<p>!bins/run/<em>/start.bat<br>
+!bins/run/</em>/stop.bat</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[git常用命令]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/git-chang-yong-ming-ling/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/git-chang-yong-ming-ling/">
+        </link>
+        <updated>2024-12-05T01:39:56.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="1-查看修改的文件状态">1. 查看修改的文件状态</h1>
+<pre><code class="language-bash">git status                # 查看工作区状态
+git diff                  # 查看具体修改内容
+</code></pre>
+<h1 id="2-添加修改的文件到暂存区">2. 添加修改的文件到暂存区</h1>
+<pre><code class="language-bash">git add .                 # 添加所有修改
+git add filename         # 添加特定文件
+git add folder/*         # 添加特定文件夹下所有文件
+</code></pre>
+<h1 id="3-提交修改">3. 提交修改</h1>
+<pre><code class="language-bash">git commit -m &quot;提交说明&quot;   # 提交并添加说明
+git commit -am &quot;提交说明&quot;  # 合并 add 和 commit 操作（仅适用于已跟踪的文件）
+</code></pre>
+<h1 id="4-推送到远程仓库">4. 推送到远程仓库</h1>
+<pre><code class="language-bash">git push                  # 推送到默认远程分支
+git push origin master    # 推送到 master 分支
+git push origin dev       # 推送到 dev 分支
+git push -u origin branch_name  # 设置上游分支并推送
+</code></pre>
+<h1 id="5其他常用命令">5.其他常用命令</h1>
+<h3 id="拉取远程更新">拉取远程更新</h3>
+<pre><code class="language-bash">git pull                  # 拉取并合并远程更新
+</code></pre>
+<h3 id="查看提交历史">查看提交历史</h3>
+<pre><code class="language-bash">git log                   # 查看提交历史
+git log --oneline        # 简洁模式查看提交历史
+</code></pre>
+<h3 id="分支操作">分支操作</h3>
+<pre><code class="language-bash">git branch               # 查看本地分支
+git branch -r            # 查看远程分支
+git checkout branch_name # 切换分支
+git checkout -b new_branch  # 创建并切换到新分支
+</code></pre>
+<h3 id="撤销操作">撤销操作</h3>
+<pre><code class="language-bash">git reset HEAD filename   # 撤销暂存区的修改
+git checkout -- filename  # 撤销工作区的修改
+</code></pre>
+<h3 id="push之后回退版本">push之后回退版本</h3>
+<ul>
+<li>查看push日志<br>
+命令：<code>git log</code></li>
+</ul>
+<p>最新提交的在最上面，按下Enter加载更多，按下q退出浏览log</p>
+<pre><code class="language-bash">$ git log
+commit 9e13f036297b34c6908284c68e7d21a46b2460e3 (HEAD -&gt; master, origin/master, origin/HEAD)
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Wed Mar 12 17:02:21 2025 +0800
+
+    添加目录
+
+commit 0281d37c9a84b5d2375cab0f3e86eafb6337e0b8
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Wed Mar 12 16:54:52 2025 +0800
+
+    删除无效脚本
+    新增linux构建脚本
+
+commit 47c4723b3d378b0c2ca4e4ef9a8f8b3c199dc162
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Thu Dec 5 16:20:59 2024 +0800
+
+    init
+
+commit 431ee068d3b8501bb7f3ea5e5e000e2f90309d44
+Author: bagedan &lt;x6775813@163.com&gt;
+Date:   Thu Dec 5 15:51:23 2024 +0800
+
+</code></pre>
+<ul>
+<li>
+<p>本地强制到目标版本<br>
+命令:git reset --hard 回退的版本号（就是log中commit后面的编码）<br>
+例：<code>git reset --hard 0281d37c9a84b5d2375cab0f3e86eafb6337e0b8</code></p>
+</li>
+<li>
+<p>将本地的head指针指向，强制提交推送到远程，实现回退版本<br>
+命令:git push -f origin master</p>
+</li>
+</ul>
+<h3 id="克隆命令">克隆命令</h3>
+<ul>
+<li>基本克隆命令</li>
+</ul>
+<pre><code class="language-bash">git clone https://github.com/username/repository.git .
+# 这里注意最后如果跟了一个&quot;.&quot; 则会降仓库的内容克隆到当前目录，如果没有跟，则会将仓库带目录一起克隆到当前目录
+</code></pre>
+<ul>
+<li>
+<p>克隆到指定目录<br>
+<code>git clone repository_url target_directory</code></p>
+</li>
+<li>
+<p>使用SSH地址克隆<br>
+<code>git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>指定SSH密钥克隆<br>
+<code>GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519' git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>克隆指定分支<br>
+<code>git clone -b branch_name repository_url</code></p>
+</li>
+<li>
+<p>克隆特定分支并且只克隆最新的提交<br>
+<code>git clone -b branch_name --single-branch --depth 1 repository_url</code></p>
+</li>
+</ul>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Chrome插件，抓取网页资源&源码]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/chrome-cha-jian-zhua-qu-wang-ye-zi-yuan-andyuan-ma/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/chrome-cha-jian-zhua-qu-wang-ye-zi-yuan-andyuan-ma/">
+        </link>
+        <updated>2024-12-04T09:00:23.000Z</updated>
+        <content type="html"><![CDATA[<p>插件名：Save All Resources</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Go配置国内镜像源，应对go mod tidy连接报错问题]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/go-pei-zhi-guo-nei-jing-xiang-yuan-ying-dui-go-mod-tidy-lian-jie-bao-cuo-wen-ti/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/go-pei-zhi-guo-nei-jing-xiang-yuan-ying-dui-go-mod-tidy-lian-jie-bao-cuo-wen-ti/">
+        </link>
+        <updated>2024-12-04T08:34:19.000Z</updated>
+        <content type="html"><![CDATA[<p>使用命令行：<br>
+<code>go env -w GOPROXY=https://goproxy.cn,direct</code><br>
+如果是idea：<br>
+打开设置路径下Setting -&gt; Go -&gt; Go Modules<br>
+在Environment中输入： GOPROXY=https://goproxy.cn,direct</p>
+]]></content>
+    </entry>
+</feed>
