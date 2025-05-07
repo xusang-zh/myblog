@@ -1,0 +1,164 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>测试复制文章 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="测试复制文章 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="              教程的开发环境  本教程的开发环境为：    Win 10（64位）  Python 3.7.0  Django 2.1    为了避免开发环境不同而导致的错误，建议读者使用相同的版本。  注意：不少读者反馈 D..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              测试复制文章
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <div id="article_body">              <h2 id="_1">教程的开发环境</h2>  <p>本教程的开发环境为：</p>  <ul>  <li><strong>Win 10（64位）</strong></li>  <li><strong>Python 3.7.0</strong></li>  <li><strong>Django 2.1</strong></li>  </ul>  <p>为了避免开发环境不同而导致的错误，建议读者使用相同的版本。</p>  <p><strong>注意：不少读者反馈 Django 2.1 版本在后面章节中会遇到 main.auth_user_old 的报错。这是版本兼容问题造成的。因此强烈建议读者使用其他小版本号，如 Django 2.2。</strong></p>  <h2 id="python">安装Python</h2>  <p>python的安装为比较简单，首先找到<a href="https://www.python.org/">Python官方网站</a>，选择python3.7的windows版本，下载并安装。</p>  <p><strong>安装时注意勾选添加python到环境变量中。</strong>如果没有或者漏掉这一步，请安装完毕后自行添加。</p>  <p>若实在不知道怎么弄的，看这篇文章：</p>  <p><a href="https://blog.csdn.net/random_w/article/details/78897365">windows上安装python3教程以及环境变量配置</a></p>  <p>安装完成后打开<a href="https://jingyan.baidu.com/article/046a7b3e83a505f9c27fa9a2.html">命令行</a>，输入<code>python -V</code>，系统打印出python的版本号，说明安装成功了：</p>  <div class="codehilite"><pre><span></span>C:\Users\dusai&gt; python -V  Python 3.7.0  </pre></div>      <h2 id="_2">配置虚拟环境</h2>  <p><strong>虚拟环境（virtualenv，或venv ）</strong>是 Python 多版本管理的利器，可以使每个项目环境与其他项目独立开来，保持环境的干净，解决包冲突问题。你可以将虚拟环境理解为一个隔绝的小系统。</p>  <p><strong>从Python3.3版本开始就自带了虚拟环境，不需要安装，配置一下就可以用了。</strong></p>  <p>新建一个文件夹，教程中为<code>django_project</code>。进入此文件夹：</p>  <div class="codehilite"><pre><span></span>E:\&gt;cd django_project  E:\django_project&gt;  </pre></div>      <p>输入配置venv的命令，其中的<code>env</code>为虚拟环境的放置目录：</p>  <div class="codehilite"><pre><span></span>E:\django_project&gt; python -m venv env    </pre></div>      <p>创建完成后，输入<code>env\Scripts\activate.bat</code>，即可进入虚拟环境：</p>  <div class="codehilite"><pre><span></span>E:\django_project&gt; env\Scripts\activate.bat  (env) E:\django_project&gt;  </pre></div>      <p><strong>盘符前有<code>(env)</code>标识说明进入venv成功。</strong></p>  <h2 id="django">安装Django</h2>  <p><strong>在虚拟环境下</strong>，输入命令<code>pip install django==2.1</code>：</p>  <blockquote>  <p>如篇头所说，建议安装 Django 2.2，即将命令改为：<code>pip install django==2.2</code></p>  </blockquote>  <div class="codehilite"><pre><span></span>(env) E:\django_project&gt; pip install django==2.1    Collecting django==2.1    Using cached     ...    ...  Successfully installed django-2.1    (env) E:\django_project&gt;  </pre></div>      <p>通过指令<code>pip install django==2.1</code>来安装和教程相同版本的 Django。</p>  <p>系统打印出以上文字表示Django安装成功了。</p>  <blockquote>  <p>这里一定要指定版本号，比如 <code>django==2.1</code> 或 <code>django==2.2</code>，否则就默认安装 Django 3 了。新手不要纠结版本问题，先跟着教程把基础掌握好。</p>  </blockquote>  <h2 id="django_1">创建Django项目</h2>  <p>还是在<strong>虚拟环境</strong>下，在<code>django_project</code>文件夹中创建Django项目：</p>  <div class="codehilite"><pre><span></span>(env) E:\django_project&gt;django-admin startproject my_blog  </pre></div>      <p>查看<code>django_project</code>文件夹，发现多了<code>my_blog</code>文件夹，其结构应该是这样：</p>  <div class="codehilite"><pre><span></span>my_blog  │  db.sqlite3  │  manage.py  │  └─my_blog      │  settings.py      │  urls.py      │  wsgi.py      └─ __init__.py  </pre></div>      <p>这就是我们刚创建出来的项目了。</p>  <p><strong>Python3.7和Django&lt;=1.11是不兼容的。如果报错请尝试安装新版本的Django，或者回退Python&lt;=3.6版本。</strong></p>  <h2 id="django_2">运行Django服务器</h2>  <p>非常幸运，Django自带一个轻量的Web开发服务器，也被叫做“runserver”。</p>  <p>开发服务器是为了让你快速开发Web程序，通过它可以避开配置生产环境的服务器的繁琐环节。</p>  <p>开发服务器会自动的检测代码的改变，并且自动加载它，因此在修改代码后不需要手动去重启服务器，非常的方便。</p>  <p>要运行这个django服务器，首先要进入<code>my_blog</code>文件夹，即含有<code>manage.py</code>文件的那个：</p>  <div class="codehilite"><pre><span></span>(env) E:\django_project&gt;cd my_blog  (env) E:\django_project\my_blog&gt;  </pre></div>      <p>输入命令<code>python manage.py runserver</code>：</p>  <div class="codehilite"><pre><span></span>(env) E:\django_project\my_blog&gt;python manage.py runserver  Performing system checks...    System check identified no issues (0 silenced).    You have 15 unapplied migration(s). Your project may not work properly until you apply the migrations for app(s): admin, auth, contenttypes, sessions.  Run 'python manage.py migrate' to apply them.  August 20, 2018 - 17:32:34  Django version 2.1, using settings 'my_blog.settings'  Starting development server at http://127.0.0.1:8000/  Quit the server with CTRL-BREAK.  </pre></div>      <p>系统打印出这些信息，说明服务器启动成功了，打开chrome浏览器，输入http://127.0.0.1:8000/ ，即倒数第2排信息提示我们的服务器地址。看到下面的界面：</p>  <p style="text-align: center;"><img alt="" src="https://www.dusaiphoto.com/media/image/image_source/avatar_thumbnail/hello_django_udoIHbf.jpg"></p>  <p>恭喜你，小火箭起飞，django运行起来了！</p>  <h2 id="_3">代码编辑器</h2>  <p>django运行起来后，我们还需要一款<strong>代码编辑器</strong>或者<strong>集成开发环境（IDE）</strong>来编辑python文件，以达到开发需求。</p>  <p>市面上有很多Python的代码编辑器或者集成开发环境可以选择。</p>  <p>教程使用了代码编辑器<strong>Sublime Text 3</strong>。它不是免费的，但是可以无限期试用，所以你不需要掏腰包。</p>  <p>进入<a href="https://www.sublimetext.com/3">Sublime Text 3官网</a>，下载对应版本的安装文件安装即可使用了。</p>  <p>当然你也可以根据喜好选择其他的编辑器或者开发环境：</p>  <ul>  <li><a href="https://blog.csdn.net/cH3RUF0tErmB3yH/article/details/80156176">10大Python集成开发环境和代码编辑器（指南）</a></li>  <li><a href="https://www.zhihu.com/question/20476960">写python程序什么编辑器最好用？</a></li>  </ul>  <h2 id="_4">浏览器</h2>  <p>作为一个正经的web开发者，你的眼中应该只有<a href="https://www.google.com/chrome/">Chrome</a>！</p>  <h2 id="_5">总结</h2>  <p>经过以上一番折腾，总算是把趁手的工具都准备齐了。</p>  <p>准备好迎接正式的挑战吧。</p>  <ul>  <li>有疑问请在<a href="http://www.dusaiphoto.com">杜赛的个人网站</a>留言，我会尽快回复。</li>  <li>或Email私信我：dusaiphoto@foxmail.com</li>  <li>项目完整代码：<a href="https://github.com/stacklens/django_blog_tutorial">Django_blog_tutorial</a></li>  </ul>          </div>
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/axure-sheng-cheng-shou-ji-duan-yu-lan-jie-mian-shi-pei-zhi/">
+              <h3 class="post-title">
+                Axure生成手机端预览界面时配置
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,290 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>linux服务器搭建之路１－安装各种软件 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="linux服务器搭建之路１－安装各种软件 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="版权声明：本文为CSDN博主「追蜗牛的coder」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/jinxiaonian11/article/deta..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              linux服务器搭建之路１－安装各种软件
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>版权声明：本文为CSDN博主「追蜗牛的coder」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。<br>
+原文链接：https://blog.csdn.net/jinxiaonian11/article/details/82284826</p>
+<div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-b5506197d8.css">
+                <div id="content_views" class="markdown_views prism-atom-one-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
+                    </svg>
+                    <p>由于实验室需要，准备配置新的服务器，之前一直使用windows比较多，linux比较少，于是开始重新学习linux各种环境的搭建．</p> 
+<h2><a name="t0"></a><a name="t0"></a><a id="1__1"></a>1. 系统选择</h2> 
+<p>在选择使用centos和ubuntu上，参考了一下网上的建议，大多认为服务器上还是centos比较好一点，再加上以前实验室也是暗中的centos，所以选择安装centos.</p> 
+<h2><a name="t1"></a><a name="t1"></a><a id="2_centos_4"></a>2. centos安装</h2> 
+<p>网上教程比较多，https://www.osyunwei.com/archives/7829.html　链接中的过程比较详细，唯一需要注意的是分区和安装选择上，后者的默认选择是最小系统，这个是没有桌面的，需要桌面以及其他工具需要自己选择，切记切记．</p> 
+<h2><a name="t2"></a><a name="t2"></a><a id="3__7"></a>3. 配置阿里源</h2> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">   cd  /etc/yum.repos.d/
+   mkdir repo_bak
+   mv *.repo repo_bak/
+<p>wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</p>
+<p>yum clean all</p>
+<p>yum makecache</p>
+<p>yum update</p>
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li><li style="color: rgb(153, 153, 153);">3</li><li style="color: rgb(153, 153, 153);">4</li><li style="color: rgb(153, 153, 153);">5</li><li style="color: rgb(153, 153, 153);">6</li><li style="color: rgb(153, 153, 153);">7</li><li style="color: rgb(153, 153, 153);">8</li><li style="color: rgb(153, 153, 153);">9</li><li style="color: rgb(153, 153, 153);">10</li><li style="color: rgb(153, 153, 153);">11</li></ul></pre> 
+<p>jiaocheng: http://www.mamicode.com/info-detail-2249787.html</p> 
+<h2><a name="t3"></a><a name="t3"></a><a id="4_python3_24"></a>4. 安装python3,并设为默认</h2> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"> # 安装各种依赖
+   yum install libffi-devel -y （指向的是阿里云）
+   yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel  libffi-devel 
+   # 下载文件后执行下面的操作
+   #释放文件：
+   tar -xvzf Python-3.5.1.tgz
+   #进入目录：
+   cd Python-3.5.1/
+   # 添加配置：
+   ./configure --prefix=/usr/local/python3
+   # 这里配置自己的安装目录，接下来编译源码：
+   make
+   # 执行安装：
+   make install
+<h1 id="重新建立连接">重新建立连接</h1>
+<p>mv /usr/bin/python /usr/bin/python.bak<br>
+ln -s /usr/local/python3/bin/python3 /usr/bin/python</p>
+<p>#配置yum，因为yum是基于python2的<br>
+vim /usr/bin/yum<br>
+把#! /usr/bin/python修改为#! /usr/bin/python2</p>
+<p>vim /usr/libexec/urlgrabber-ext-down<br>
+把#! /usr/bin/python 修改为#! /usr/bin/python2</p>
+<h1 id="添加环境量">添加环境量</h1>
+<p>vim .bashrc<br>
+export PATH=/usr/local/python3/bin:$PATH</p>
+<h1 id="pip3-软连接到pip">pip3 软连接到pip</h1>
+<p>ln -s /usr/local/python3/bin/pip3 /usr/bin/pip</p>
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li><li style="color: rgb(153, 153, 153);">3</li><li style="color: rgb(153, 153, 153);">4</li><li style="color: rgb(153, 153, 153);">5</li><li style="color: rgb(153, 153, 153);">6</li><li style="color: rgb(153, 153, 153);">7</li><li style="color: rgb(153, 153, 153);">8</li><li style="color: rgb(153, 153, 153);">9</li><li style="color: rgb(153, 153, 153);">10</li><li style="color: rgb(153, 153, 153);">11</li><li style="color: rgb(153, 153, 153);">12</li><li style="color: rgb(153, 153, 153);">13</li><li style="color: rgb(153, 153, 153);">14</li><li style="color: rgb(153, 153, 153);">15</li><li style="color: rgb(153, 153, 153);">16</li><li style="color: rgb(153, 153, 153);">17</li><li style="color: rgb(153, 153, 153);">18</li><li style="color: rgb(153, 153, 153);">19</li><li style="color: rgb(153, 153, 153);">20</li><li style="color: rgb(153, 153, 153);">21</li><li style="color: rgb(153, 153, 153);">22</li><li style="color: rgb(153, 153, 153);">23</li><li style="color: rgb(153, 153, 153);">24</li><li style="color: rgb(153, 153, 153);">25</li><li style="color: rgb(153, 153, 153);">26</li><li style="color: rgb(153, 153, 153);">27</li><li style="color: rgb(153, 153, 153);">28</li><li style="color: rgb(153, 153, 153);">29</li><li style="color: rgb(153, 153, 153);">30</li><li style="color: rgb(153, 153, 153);">31</li><li style="color: rgb(153, 153, 153);">32</li></ul></pre> 
+<p>之后把pip的源换为国内源，这样速度会快很多<br> 修改配置文件~/.pip/pip.conf（一般需要新建，"."表示隐藏目录或隐藏文件）</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">mkdir ~/.pip
+cd ~/.pip
+vim pip.conf
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li><li style="color: rgb(153, 153, 153);">3</li></ul></pre> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">[global]
+index-url = https://pypi.douban.com/simple
+[install]
+trusted-host = http://pypi.douban.com
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li><li style="color: rgb(153, 153, 153);">3</li><li style="color: rgb(153, 153, 153);">4</li></ul></pre> 
+<h2><a name="t4"></a><a name="t4"></a><a id="4_linuxwin_74"></a>4. linux访问win共享路径,并设为开机加载</h2> 
+<p>mount挂载ｗｉｎ共享路径</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">mount -t cifs //192.168.10.115/linux_data /mnt/win_data -o username="gxrao",password="xiang713",vers=3.0
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>开机挂载：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">//192.168.10.115/linux_data /home/gxrao/win_data cifs rw,username=gxrao,password=xiang713,uid=1000,gid=1000  0 0 
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>参考文章：<br> http://blog.sina.com.cn/s/blog_ad5322e70102wzlw.html<br> 加上了uid=1000,gid=1000便能写入</p> 
+<h2><a name="t5"></a><a name="t5"></a><a id="5_win_88"></a>5. 远程win</h2> 
+<p>客户端配置</p> 
+<ol><li>安装rdesktop<br> 参考：　https://blog.csdn.net/junbopengpeng/article/details/33087517</li></ol> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">yum install -y rdesktop 
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<ol start="2"><li>使用rdesktop命令连接到win桌面<br> 参考文章：　https://blog.csdn.net/byb123/article/details/51204955?locationNum=8&amp;fps=1</li></ol> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">rdesktop -a 16 x.x.x.x:3389 -u username -p password -f  
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>ｗｉｎ服务器配置</p> 
+<ol><li>开启远程访问</li><li>取消防火墙拦截<br> 参考文章：<br> 在.bashrc中添加：</li></ol> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">  alias win="rdesktop -a 24 -g 1920x1080 -K -D -r clipboard:PRIMARYCLIPBOARD -u gxrao -p xiang713 192.168.10.115:3389"
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<h2><a name="t6"></a><a name="t6"></a><a id="6__115"></a>6. 安装搜狗输入法</h2> 
+<p>(1).如果本机已安装ibus，需要先卸载，需要root用户操作：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">yum remove ibus -y
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>如果使用图形界面，这个操作会使得图形界面失效，因为开机不会启动gdm,所以还得运行：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">systemctl enable gdm
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>(2).接下来安装fcitx ： 使用</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">yum -y  install fcitx fcitx-pinyin fcitx-configtool 
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>装不上就先安装网易yum源，<br> 再执行：yum -y install epel-release.noarch(EPEL源),然后再安装．<br> (EPEL (Extra Packages for Enterprise Linux)是基于Fedora的一个项目，为“红帽系”的操作系统提供额外的软件包，适用于RHEL、CentOS和Scientific Linux.)</p> 
+<p>(3).接下来去搜狗输入法Linux官网下载deb版本的软件包，注意是32bit还是64bit：</p> 
+<p>(4).安装dpkg包，切换为root用户：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"> yum -y install dpkg
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>安装完后切换到下载的搜狗安装包路径后执行：<br> <code>ar vx sogoupinyin2.2.0.0108amd64.deb</code><br> #执行本句命令后会有如下提示：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">x - debian-binary
+<p>x - control.tar.gz</p>
+<p>x - data.tar.xz</p>
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li><li style="color: rgb(153, 153, 153);">3</li><li style="color: rgb(153, 153, 153);">4</li><li style="color: rgb(153, 153, 153);">5</li></ul></pre> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"> tar -xvf data.tar.xz  -C /
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>(5).复制搜狗拼音的库，保持root用户：</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;"> cp /usr/lib/x86_64-linux-gnu/fcitx/fcitx-sogoupinyin.so  /usr/lib64/fcitx/
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li></ul></pre> 
+<p>(6).执行如下命令后重启:<br> fcitx (杀死ibus相关进程 pkill -9 ibus)，执行完后ctrl+C结束即可；<br> sogou-qimpanel (可能需要安装qtwebkit等: yum -y install libQtWebKit*)</p> 
+<p>(7).重启后即可看到搜狗输入法的工具栏</p> 
+<h2><a name="t7"></a><a name="t7"></a><a id="7__175"></a>7. 升级内核</h2> 
+<p>内核升级教程，一定要在安装显卡驱动之前更新，否则会因为显卡驱动原因在升级后无法进入系统（解决办法：https://blog.csdn.net/zhou1519/article/details/39249685）<br> 内核升级教程：<br> https://blog.csdn.net/u010250863/article/details/70169985</p> 
+<p>仔细跟着教程做就没有问题</p> 
+<h2><a name="t8"></a><a name="t8"></a><a id="8　NVIDIA_183"></a>8.　安装NVIDIA显卡驱动</h2> 
+<p>参考文章：<br> https://blog.csdn.net/u013378306/article/details/69229919</p> 
+<p>对内核进行重新配置后导致启动无法进入系统，是显卡的原因，重新安装驱动，提示　anable to load the kernel module ‘nvidia.ko’ 安装命令为如下便可解决</p> 
+<pre class="prettyprint"><code class="has-numbering" onclick="mdcp.copyCode(event)" style="position: unset;">sh NVIDIA-Linux-x86_64-390.87.run -k $(uname -r)
+<div class="hljs-button {2}" data-title="复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}"></div></code><ul class="pre-numbering" style=""><li style="color: rgb(153, 153, 153);">1</li><li style="color: rgb(153, 153, 153);">2</li></ul></pre>
+                </div><div data-report-view="{&quot;mod&quot;:&quot;1585297308_001&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/jinxiaonian11/article/details/82284826&quot;,&quot;extend1&quot;:&quot;pc&quot;,&quot;ab&quot;:&quot;new&quot;}"><div></div></div>
+                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-d7a94ec6ab.css" rel="stylesheet">
+                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-f1c5feb645.css" rel="stylesheet">
+        </div>
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E9%87%8D%E6%96%B0%E5%BB%BA%E7%AB%8B%E8%BF%9E%E6%8E%A5">重新建立连接</a></li>
+<li><a href="#%E6%B7%BB%E5%8A%A0%E7%8E%AF%E5%A2%83%E9%87%8F">添加环境量</a></li>
+<li><a href="#pip3-%E8%BD%AF%E8%BF%9E%E6%8E%A5%E5%88%B0pip">pip3 软连接到pip</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/configparser-mo-kuai-de-chang-jian-yong-fa-du-xie-pei-zhi-wen-jian/">
+              <h3 class="post-title">
+                configparser模块的常见用法，读写配置文件
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

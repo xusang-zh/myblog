@@ -1,0 +1,291 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ubuntu系统用国内镜像源安装docker | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="ubuntu系统用国内镜像源安装docker | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在 Ubuntu 系统上使用 阿里云镜像源 安装 Docker，可以大幅提升下载速度和稳定性。以下是详细步骤：
+
+1. 卸载旧版本 Docker（如有）
+sudo apt-get remove docker docker-engine do..." />
+    <meta name="keywords" content="docker,linux" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              ubuntu系统用国内镜像源安装docker
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-03-31
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在 Ubuntu 系统上使用 <strong>阿里云镜像源</strong> 安装 Docker，可以大幅提升下载速度和稳定性。以下是详细步骤：</p>
+<hr>
+<h3 id="1-卸载旧版本-docker如有"><strong>1. 卸载旧版本 Docker（如有）</strong></h3>
+<pre><code class="language-bash">sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo rm -rf /var/lib/docker
+</code></pre>
+<hr>
+<h3 id="2-安装必要工具"><strong>2. 安装必要工具</strong></h3>
+<pre><code class="language-bash">sudo apt-get update
+sudo apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+</code></pre>
+<hr>
+<h3 id="3-配置阿里云-docker-镜像源"><strong>3. 配置阿里云 Docker 镜像源</strong></h3>
+<h4 id="1-添加阿里云-gpg-密钥"><strong>(1) 添加阿里云 GPG 密钥</strong></h4>
+<pre><code class="language-bash">sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker-archive-keyring.gpg
+</code></pre>
+<h4 id="2-添加阿里云-docker-源"><strong>(2) 添加阿里云 Docker 源</strong></h4>
+<pre><code class="language-bash">echo \
+  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker-archive-keyring.gpg] \
+  https://mirrors.aliyun.com/docker-ce/linux/ubuntu \
+  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</code></pre>
+<hr>
+<h3 id="4-更新软件包索引"><strong>4. 更新软件包索引</strong></h3>
+<pre><code class="language-bash">sudo apt-get update
+</code></pre>
+<hr>
+<h3 id="5-安装-docker-及插件"><strong>5. 安装 Docker 及插件</strong></h3>
+<pre><code class="language-bash">sudo apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin
+</code></pre>
+<hr>
+<h3 id="6-验证安装"><strong>6. 验证安装</strong></h3>
+<pre><code class="language-bash">sudo docker run hello-world
+</code></pre>
+<p>如果看到 <code>Hello from Docker!</code> 表示安装成功。</p>
+<hr>
+<h3 id="7-配置非-root-用户使用-docker可选"><strong>7. 配置非 root 用户使用 Docker（可选）</strong></h3>
+<pre><code class="language-bash">sudo usermod -aG docker $USER
+newgrp docker  # 立即生效（或重新登录终端）
+</code></pre>
+<hr>
+<h3 id="常见问题解决"><strong>常见问题解决</strong></h3>
+<h4 id="1-如果报错-release-file-is-not-valid-yet"><strong>1. 如果报错 <code>Release file is not valid yet</code></strong></h4>
+<pre><code class="language-bash"># 同步系统时间
+sudo apt-get install -y ntpdate
+sudo ntpdate ntp.aliyun.com
+</code></pre>
+<h4 id="2-如果阿里镜像源不可用"><strong>2. 如果阿里镜像源不可用</strong></h4>
+<p>尝试替换为 <strong>清华源</strong>：</p>
+<pre><code class="language-bash">sudo sed -i 's|mirrors.aliyun.com|mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+</code></pre>
+<h4 id="3-如果-ubuntu-版本不匹配"><strong>3. 如果 Ubuntu 版本不匹配</strong></h4>
+<p>手动指定代号（如 <code>jammy</code> 对应 Ubuntu 22.04）：</p>
+<pre><code class="language-bash">echo &quot;deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu jammy stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list
+</code></pre>
+<hr>
+<h3 id="一键安装脚本快速方案"><strong>一键安装脚本（快速方案）</strong></h3>
+<pre><code class="language-bash">curl -fsSL https://get.docker.com | sudo sh -s -- --mirror Aliyun
+</code></pre>
+<hr>
+<h3 id="配置-docker-镜像加速进一步提升拉取速度"><strong>配置 Docker 镜像加速（进一步提升拉取速度）</strong></h3>
+<pre><code class="language-bash">sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json &lt;&lt;EOF
+{
+  &quot;registry-mirrors&quot;: [&quot;https://&lt;your-aliyun-mirror&gt;.mirror.aliyuncs.com&quot;]
+}
+EOF
+sudo systemctl restart docker
+</code></pre>
+<blockquote>
+<p>将 <code>&lt;your-aliyun-mirror&gt;</code> 替换为你的阿里云容器镜像服务地址（需<a href="https://cr.console.aliyun.com/">开通阿里云容器镜像服务</a>获取）。</p>
+</blockquote>
+<hr>
+<p>通过以上步骤，您可以在 Ubuntu 系统上通过阿里云镜像快速完成 Docker 的安装和配置。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-%E5%8D%B8%E8%BD%BD%E6%97%A7%E7%89%88%E6%9C%AC-docker%E5%A6%82%E6%9C%89"><strong>1. 卸载旧版本 Docker（如有）</strong></a></li>
+<li><a href="#2-%E5%AE%89%E8%A3%85%E5%BF%85%E8%A6%81%E5%B7%A5%E5%85%B7"><strong>2. 安装必要工具</strong></a></li>
+<li><a href="#3-%E9%85%8D%E7%BD%AE%E9%98%BF%E9%87%8C%E4%BA%91-docker-%E9%95%9C%E5%83%8F%E6%BA%90"><strong>3. 配置阿里云 Docker 镜像源</strong></a>
+<ul>
+<li><a href="#1-%E6%B7%BB%E5%8A%A0%E9%98%BF%E9%87%8C%E4%BA%91-gpg-%E5%AF%86%E9%92%A5"><strong>(1) 添加阿里云 GPG 密钥</strong></a></li>
+<li><a href="#2-%E6%B7%BB%E5%8A%A0%E9%98%BF%E9%87%8C%E4%BA%91-docker-%E6%BA%90"><strong>(2) 添加阿里云 Docker 源</strong></a></li>
+</ul>
+</li>
+<li><a href="#4-%E6%9B%B4%E6%96%B0%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%B4%A2%E5%BC%95"><strong>4. 更新软件包索引</strong></a></li>
+<li><a href="#5-%E5%AE%89%E8%A3%85-docker-%E5%8F%8A%E6%8F%92%E4%BB%B6"><strong>5. 安装 Docker 及插件</strong></a></li>
+<li><a href="#6-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><strong>6. 验证安装</strong></a></li>
+<li><a href="#7-%E9%85%8D%E7%BD%AE%E9%9D%9E-root-%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8-docker%E5%8F%AF%E9%80%89"><strong>7. 配置非 root 用户使用 Docker（可选）</strong></a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><strong>常见问题解决</strong></a>
+<ul>
+<li><a href="#1-%E5%A6%82%E6%9E%9C%E6%8A%A5%E9%94%99-release-file-is-not-valid-yet"><strong>1. 如果报错 <code>Release file is not valid yet</code></strong></a></li>
+<li><a href="#2-%E5%A6%82%E6%9E%9C%E9%98%BF%E9%87%8C%E9%95%9C%E5%83%8F%E6%BA%90%E4%B8%8D%E5%8F%AF%E7%94%A8"><strong>2. 如果阿里镜像源不可用</strong></a></li>
+<li><a href="#3-%E5%A6%82%E6%9E%9C-ubuntu-%E7%89%88%E6%9C%AC%E4%B8%8D%E5%8C%B9%E9%85%8D"><strong>3. 如果 Ubuntu 版本不匹配</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC%E5%BF%AB%E9%80%9F%E6%96%B9%E6%A1%88"><strong>一键安装脚本（快速方案）</strong></a></li>
+<li><a href="#%E9%85%8D%E7%BD%AE-docker-%E9%95%9C%E5%83%8F%E5%8A%A0%E9%80%9F%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%8F%90%E5%8D%87%E6%8B%89%E5%8F%96%E9%80%9F%E5%BA%A6"><strong>配置 Docker 镜像加速（进一步提升拉取速度）</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/shi-yong-guo-nei-jing-xiang-yuan-an-zhuang-docker/">
+              <h3 class="post-title">
+                debian使用国内镜像源安装docker
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

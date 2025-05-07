@@ -1,0 +1,246 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>如何把工程文件复制到linux的docker容器中 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="如何把工程文件复制到linux的docker容器中 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="要将工程文件复制到 Linux 的 Docker 容器中，可以使用 docker cp 命令。这个命令允许你从主机复制文件或目录到容器中，或者从容器中复制文件或目录到主机中。
+以下是具体步骤和示例：
+步骤 1: 启动或获取容器 ID
+首先，..." />
+    <meta name="keywords" content="docker,linux" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              如何把工程文件复制到linux的docker容器中
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>要将工程文件复制到 Linux 的 Docker 容器中，可以使用 <code>docker cp</code> 命令。这个命令允许你从主机复制文件或目录到容器中，或者从容器中复制文件或目录到主机中。</p>
+<p>以下是具体步骤和示例：</p>
+<h3 id="步骤-1-启动或获取容器-id">步骤 1: 启动或获取容器 ID</h3>
+<p>首先，确保你的 Docker 容器正在运行。如果容器已经运行，可以使用 <code>docker ps</code> 命令来获取容器 ID 或名称。</p>
+<pre><code class="language-sh">docker ps
+</code></pre>
+<p>这将显示类似以下的输出：</p>
+<pre><code>CONTAINER ID   IMAGE         COMMAND                  CREATED         STATUS         PORTS     NAMES
+abcd1234efgh   myimage       &quot;/bin/sh -c 'some_cmd'&quot;  2 minutes ago   Up 2 minutes             mycontainer
+</code></pre>
+<p>记录下你目标容器的 <code>CONTAINER ID</code> 或 <code>NAMES</code>。</p>
+<h3 id="步骤-2-使用-docker-cp-复制文件">步骤 2: 使用 <code>docker cp</code> 复制文件</h3>
+<p>假设你有一个工程目录 <code>/path/to/your/project</code> 在主机上，并且你想复制到容器中的 <code>/app</code> 目录。使用以下命令：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+<p>或者，如果你使用容器名称：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project mycontainer:/app
+</code></pre>
+<h3 id="示例">示例</h3>
+<ol>
+<li>
+<p><strong>复制整个目录</strong>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project abcd1234efgh:/app
+</code></pre>
+</li>
+<li>
+<p><strong>复制单个文件</strong>：</p>
+<p>如果你只想复制单个文件，例如 <code>/path/to/your/project/file.txt</code>：</p>
+<pre><code class="language-sh">docker cp /path/to/your/project/file.txt abcd1234efgh:/app/file.txt
+</code></pre>
+</li>
+</ol>
+<h3 id="检查复制结果">检查复制结果</h3>
+<p>进入容器并检查文件是否复制成功：</p>
+<pre><code class="language-sh">docker exec -it abcd1234efgh /bin/bash
+</code></pre>
+<p>然后导航到目标目录 <code>/app</code>，确认文件或目录已经复制成功。</p>
+<pre><code class="language-sh">cd /app
+ls -la
+</code></pre>
+<h3 id="其他常用选项">其他常用选项</h3>
+<ul>
+<li>
+<p><strong>从容器复制到主机</strong>：</p>
+<p>假设你要将容器中的 <code>/app/project</code> 目录复制到主机上的 <code>/path/to/backup</code>：</p>
+<pre><code class="language-sh">docker cp abcd1234efgh:/app/project /path/to/backup
+</code></pre>
+</li>
+</ul>
+<h3 id="注意事项">注意事项</h3>
+<ul>
+<li><strong>权限问题</strong>：确保主机上和容器内的目标目录具有适当的权限，否则可能会导致文件无法访问或复制失败。</li>
+<li><strong>路径准确性</strong>：确保使用绝对路径，并且容器内的目标路径存在或可以创建。</li>
+</ul>
+<p>通过这些步骤和示例，你可以轻松地将工程文件复制到 Linux 的 Docker 容器中，或从容器中复制文件到主机。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E6%AD%A5%E9%AA%A4-1-%E5%90%AF%E5%8A%A8%E6%88%96%E8%8E%B7%E5%8F%96%E5%AE%B9%E5%99%A8-id">步骤 1: 启动或获取容器 ID</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-2-%E4%BD%BF%E7%94%A8-docker-cp-%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6">步骤 2: 使用 <code>docker cp</code> 复制文件</a></li>
+<li><a href="#%E7%A4%BA%E4%BE%8B">示例</a></li>
+<li><a href="#%E6%A3%80%E6%9F%A5%E5%A4%8D%E5%88%B6%E7%BB%93%E6%9E%9C">检查复制结果</a></li>
+<li><a href="#%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E9%80%89%E9%A1%B9">其他常用选项</a></li>
+<li><a href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">注意事项</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/ru-he-zai-debian-xi-tong-zhong-an-zhuang-python383yi-ji-chuang-jian-xu-ni-huan-jing/">
+              <h3 class="post-title">
+                如何在debian系统中安装python3.8.3，以及创建虚拟环境
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>django开启定时任务 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="django开启定时任务 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+首先，这里介绍使用的是最原始的crontab开启定时任务，也可使用Celery和APScheduler。
+
+定时任务使用的场景很多，以定时生成静态首页为例。
+1. 安装支持包：django-crontab
+安装方式：pip install..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              django开启定时任务
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <blockquote>
+<p>首先，这里介绍使用的是最原始的crontab开启定时任务，也可使用Celery和APScheduler。</p>
+</blockquote>
+<p>定时任务使用的场景很多，以定时生成静态首页为例。<br>
+<strong>1. 安装支持包：<code>django-crontab</code></strong><br>
+安装方式：<code>pip install django-crontab</code></p>
+<p><strong>2. 注册定时应用</strong><br>
+在settings.INSTALLED_APPS中添加应用：</p>
+<pre><code>INSTALLED_APPS = [    
+    'django_crontab', # 定时任务
+]
+</code></pre>
+<p><strong>3. 定时任务crontab的时间设置格式</strong></p>
+<blockquote>
+<p>定时时间基本格式 :<br>
+5个'*'符号：* * * * * 命令<br>
+依次对应：分 时 日 月 周<br>
+M: 分钟（0-59）。每分钟用 * 或者 */1 表示<br>
+H：小时（0-23）。（0表示0点）<br>
+D：天（1-31）。<br>
+m: 月（1-12）。<br>
+d: 一星期内的天（0~6，0为星期天）。</p>
+</blockquote>
+<p>示例：</p>
+<ul>
+<li>每1分钟执行一次myCommand</li>
+</ul>
+<blockquote>
+<p>* /1* * * * myCommand</p>
+</blockquote>
+<ul>
+<li>每小时的第3和第15分钟执行</li>
+</ul>
+<blockquote>
+<p>3,15 * * * * myCommand</p>
+</blockquote>
+<ul>
+<li>在上午8点到11点的第3和第15分钟执行</li>
+</ul>
+<blockquote>
+<p>3,15 8-11 * * * myCommand</p>
+</blockquote>
+<ul>
+<li>每隔两天的上午8点到11点的第3和第15分钟执行</li>
+</ul>
+<blockquote>
+<p>3,15 8-11 */2 * * myCommand</p>
+</blockquote>
+<ul>
+<li>每周一上午8点到11点的第3和第15分钟执行</li>
+</ul>
+<blockquote>
+<p>3,15 8-11 * * 1 myCommand</p>
+</blockquote>
+<p><strong>4. 设置定时任务</strong><br>
+在settings中添加CRONJOBS，设置定时任务。</p>
+<ul>
+<li>以下示例定时任务为：apps下--contents应用内--generate_static_index_html方法；</li>
+<li>定时时间为：每隔一分钟运行一次；</li>
+<li>&quot;&gt;&gt;&quot;符：拼接定时任务运行结果保存路径。</li>
+</ul>
+<pre><code>CRONJOBS = [  
+    # 每1分钟生成一次首页静态文件  
+    ('*/1 * * * *', 'contents.crons.generate_static_index_html', '&gt;&gt; ' + os.path.join(os.path.dirname(BASE_DIR), 'logs/crontab.log'))  
+]  
+</code></pre>
+<p><strong>5. 设置中文支持</strong><br>
+在定时任务中，如果出现非英文字符，会出现字符异常错误</p>
+<ul>
+<li>在settings中添加：</li>
+</ul>
+<pre><code>CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
+</code></pre>
+<p><strong>6. 管理定时任务</strong></p>
+<ul>
+<li>添加定时任务到系统中,启动定时任务必须先执行改语句。</li>
+</ul>
+<blockquote>
+<p>$ python manage.py crontab add</p>
+</blockquote>
+<ul>
+<li>显示已激活的定时任务</li>
+</ul>
+<blockquote>
+<p>$ python manage.py crontab show</p>
+</blockquote>
+<ul>
+<li>移除定时任务</li>
+</ul>
+<blockquote>
+<p>$ python manage.py crontab remove</p>
+</blockquote>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/uwsgi-qi-dong-django/">
+              <h3 class="post-title">
+                uwsgi启动django
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

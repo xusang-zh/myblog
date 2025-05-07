@@ -1,0 +1,264 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>.gitignore的内容添加 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title=".gitignore的内容添加 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="-- 忽略单个文件
+filename.txt
+-- 忽略特定扩展名的文件
+*.log
+*.tmp
+-- 忽略特定目录
+node_modules/
+dist/
+pycache/
+-- 忽略特定路径的文件
+logs/debug.log
+buil..." />
+    <meta name="keywords" content="程序相关,git" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              .gitignore的内容添加
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-12-05
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/fIKrGjtu_Lj/" class="post-tag">
+                  # git
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>-- 忽略单个文件<br>
+filename.txt</p>
+<p>-- 忽略特定扩展名的文件<br>
+*.log<br>
+*.tmp</p>
+<p>-- 忽略特定目录<br>
+node_modules/<br>
+dist/<br>
+<strong>pycache</strong>/</p>
+<p>-- 忽略特定路径的文件<br>
+logs/debug.log<br>
+build/output/</p>
+<p>-- 不忽略特定文件（使用 ! 符号）<br>
+!important.log</p>
+<h2 id="常见示例">常见示例</h2>
+<p>-- Python<br>
+<strong>pycache</strong>/<br>
+*.py[cod]<br>
+*$py.class<br>
+.env<br>
+venv/<br>
+.venv/<br>
+*.pyc</p>
+<p>-- Node.js<br>
+node_modules/<br>
+npm-debug.log<br>
+yarn-debug.log<br>
+yarn-error.log</p>
+<p>-- IDE<br>
+.idea/<br>
+.vscode/<br>
+*.swp<br>
+*.swo</p>
+<p>-- 编译输出<br>
+dist/<br>
+build/<br>
+*.exe<br>
+*.dll<br>
+*.so<br>
+*.dylib</p>
+<p>-- 日志文件<br>
+*.log<br>
+logs/<br>
+log/</p>
+<p>-- 系统文件<br>
+.DS_Store<br>
+Thumbs.db</p>
+<p>-- 配置文件<br>
+config.ini<br>
+settings.json</p>
+<h2 id="如果我想忽略binsrun目录下的文件但是不包括该目录下的startbat和stopbat应该怎么写">如果我想忽略bins/run目录下的文件但是不包括该目录下的start.bat和stop.bat应该怎么写</h2>
+<p>-- 忽略 bins/run 目录下的所有文件<br>
+bins/run/*</p>
+<p>-- 不忽略 start.bat 和 stop.bat<br>
+!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="忽略所有目录下的文件">忽略所有目录下的文件</h3>
+<p>bins/run/*</p>
+<h3 id="不忽略特定文件">不忽略特定文件</h3>
+<p>!bins/run/start.bat<br>
+!bins/run/stop.bat</p>
+<h3 id="如果有子目录需要不忽略子目录">如果有子目录，需要不忽略子目录</h3>
+<p>!bins/run/*/</p>
+<h3 id="然后不忽略子目录中的特定文件">然后不忽略子目录中的特定文件</h3>
+<p>!bins/run/<em>/start.bat<br>
+!bins/run/</em>/stop.bat</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%B8%B8%E8%A7%81%E7%A4%BA%E4%BE%8B">常见示例</a></li>
+<li><a href="#%E5%A6%82%E6%9E%9C%E6%88%91%E6%83%B3%E5%BF%BD%E7%95%A5binsrun%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6%E4%BD%86%E6%98%AF%E4%B8%8D%E5%8C%85%E6%8B%AC%E8%AF%A5%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84startbat%E5%92%8Cstopbat%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%86%99">如果我想忽略bins/run目录下的文件但是不包括该目录下的start.bat和stop.bat应该怎么写</a>
+<ul>
+<li><a href="#%E5%BF%BD%E7%95%A5%E6%89%80%E6%9C%89%E7%9B%AE%E5%BD%95%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6">忽略所有目录下的文件</a></li>
+<li><a href="#%E4%B8%8D%E5%BF%BD%E7%95%A5%E7%89%B9%E5%AE%9A%E6%96%87%E4%BB%B6">不忽略特定文件</a></li>
+<li><a href="#%E5%A6%82%E6%9E%9C%E6%9C%89%E5%AD%90%E7%9B%AE%E5%BD%95%E9%9C%80%E8%A6%81%E4%B8%8D%E5%BF%BD%E7%95%A5%E5%AD%90%E7%9B%AE%E5%BD%95">如果有子目录，需要不忽略子目录</a></li>
+<li><a href="#%E7%84%B6%E5%90%8E%E4%B8%8D%E5%BF%BD%E7%95%A5%E5%AD%90%E7%9B%AE%E5%BD%95%E4%B8%AD%E7%9A%84%E7%89%B9%E5%AE%9A%E6%96%87%E4%BB%B6">然后不忽略子目录中的特定文件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/git-chang-yong-ming-ling/">
+              <h3 class="post-title">
+                git常用命令
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

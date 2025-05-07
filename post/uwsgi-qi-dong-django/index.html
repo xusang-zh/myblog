@@ -1,0 +1,251 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>uwsgi启动django | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="uwsgi启动django | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="一.收集静态资源
+1.settings.py
+# 静态资源访问的起始url
+STATIC_URL = '/static/'
+# 指定静态资源所在的目录
+STATICFILES_DIRS = [
+    os.path.join(BASE_D..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              uwsgi启动django
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h2 id="一收集静态资源">一.收集静态资源</h2>
+<p><strong>1.settings.py</strong></p>
+<pre><code># 静态资源访问的起始url
+STATIC_URL = '/static/'
+# 指定静态资源所在的目录
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+# 设置收集静态资源的路径(部署时使用)
+STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static/')
+</code></pre>
+<p><code>注意：</code>  <code>'collect_static/'</code>这里的反斜杠一定不能少！！！</p>
+<p><strong>2.收集静态资源</strong></p>
+<pre><code>python manage.py collectstatic
+</code></pre>
+<h2 id="二配置uwsgi">二.配置uwsgi</h2>
+<p><strong>1.安装</strong></p>
+<pre><code>pip install uwsgi
+</code></pre>
+<p><strong>2.新增文件 uwsgi.ini ；跟manage.py同一级目录</strong></p>
+<pre><code>[uwsgi]
+; 监听的端口
+http = :8000
+
+; 指定和nginx进行套接字通信的方式：端口或文件
+; socket = 127.0.0.1:8001
+; socket = /home/kzzf/project/OfferHelp/OfferHelp.sock
+
+; 项目所在目录，和manage.py同级
+chdir = /home/kzzf/project/OfferHelp
+
+; 虚拟环境所在目录
+home=/home/kzzf/env/OfferHelp-env
+PYTHONHOME = /home/kzzf/env/OfferHelp-env/bin/
+
+; 主应用中的wsgi文件
+wsgi-file = OfferHelp/wsgi.py
+
+; 使用路由代理静态资源，但失败了
+; static-safe=/home/kzzf/project/OfferHelp/static/
+; route = /static/(.*) static:/home/kzzf/project/OfferHelp/static/$1
+
+; 代理静态资源：路径映射
+static-map = /static=/home/kzzf/project/OfferHelp/collect_static
+
+; 启动一个master进程，来管理其余的子进程
+master=True
+processes = 4
+threads = 2
+
+; 保存主进程的pid，用来控制uwsgi服务
+pidfile=/home/kzzf/project/OfferHelp/uwsgi.pid
+; 启动项目  uwsgi uwsgi.ini
+; uwsgi --stop/reload xxx.pid  停止/重启uwsgi
+
+; 设置后台运行，保存日志
+daemonize=/home/kzzf/project/OfferHelp/log/uwsgi.log
+; deamonize=1  ; 用来配置background运行
+
+; 设置每个工作进程处理请求的上限，达到上限时，将回收（重启）该进程。可以预防内存泄漏
+max-requests=5000
+
+# 服务停止时自动移除unix Socket和pid文件
+vacuum=true
+</code></pre>
+<p><strong>3.启动项目</strong></p>
+<pre><code>uwsgi uwsgi.ini
+
+# 停止
+uwsgi --stop uwsgi.pid
+pkill -f uwsgi -9
+</code></pre>
+<p>参考：https://blog.csdn.net/xiefeisd/article/details/89502969</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E4%B8%80%E6%94%B6%E9%9B%86%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90">一.收集静态资源</a></li>
+<li><a href="#%E4%BA%8C%E9%85%8D%E7%BD%AEuwsgi">二.配置uwsgi</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/ce-shi-fu-zhi-wen-zhang/">
+              <h3 class="post-title">
+                测试复制文章
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

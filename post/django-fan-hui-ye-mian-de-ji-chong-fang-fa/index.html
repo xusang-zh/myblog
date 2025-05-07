@@ -1,0 +1,217 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Django 返回页面的几种方法 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Django 返回页面的几种方法 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在view模块中，我们可以定义返回的页面以及数据，目前总结当前用的几种方法
+1.return HttpResponse（'hello world'）
+这种方法可以直接放回html的body。
+
+return render(request,'..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Django 返回页面的几种方法
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在view模块中，我们可以定义返回的页面以及数据，目前总结当前用的几种方法</p>
+<p>1.return HttpResponse（'hello world'）</p>
+<p>这种方法可以直接放回html的body。</p>
+<ol start="2">
+<li>return render(request,'xx.html',{'data':xxxx})</li>
+</ol>
+<p>这种方法可以返回某个页面，并且可以在返回的页面中使用模板来调用我们返回的数据，这种方法也是应用最多的方法</p>
+<ol start="3">
+<li>return HttpResponseRedirect（'/index/'）</li>
+</ol>
+<p>这种方法是通过返回路径，然后去urls中匹配页面，通常用来重定向使用，应用次数也挺多。</p>
+<p>4、不通过view模块，直接跳转html</p>
+<p>在url模块中使用from django.views.generic import TemplateView 模块</p>
+<p>url(r'^register_go/$', TemplateView.as_view(template_name='register.html')),然后在url中可以直接指向url，不需要通过view模块来实现页面的跳转</p>
+<h1 id="httpresponseredirect详解">HttpResponseRedirect详解</h1>
+<p>在使用Django进行开发时，HttpResponseRedirect算是用的比较广泛的，对于一些已有url，相较于使用render有时可以极大减少代码量，下面是我学习并总结的一些使用方法。</p>
+<p>以下面urls.py为例</p>
+<pre><code class="language-python">from django.conf.urls import url
+import app_one.main
+urlpatterns = [
+	url(r'^index_one/$', app_one.main.index_one,name='index_one'),
+	url(r'^index_two/(?P&lt;view_id&gt;\d+)/$', app_one.main.index_two,name='index_two'),
+	url(r'^index_three/(?P&lt;view_id&gt;\d+)/(?P&lt;user_id&gt;\d+)/$', app_one.main.index_three,name='index_three'),
+]
+
+</code></pre>
+<p>main.py文件</p>
+<pre><code class="language-python">from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
+def response_one(request):
+	...
+	return HttpResponseRedirect('/index_one/')
+	#用下面这行也可以
+	#return HttpResponseRedirect(reverse('index_one'))
+
+def response_two(request):
+	...
+	return HttpResponseRedirect(reverse('index_two',args=[vid]))
+
+def response_three(request):
+	...
+	return HttpResponseRedirect(reverse('index_three'kwargs={'view_id':vid,'user_id':uid}))
+
+</code></pre>
+<p>分别对应无参数、一个参数、多个参数的使用情况。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#httpresponseredirect%E8%AF%A6%E8%A7%A3">HttpResponseRedirect详解</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/django-qu-cao-zuo-yi-jing-cun-zai-shu-ju-de-shu-ju-ku/">
+              <h3 class="post-title">
+                Django去操作已经存在数据的数据库
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

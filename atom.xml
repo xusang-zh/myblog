@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://xusang-zh.github.io/myblog/</id>
+    <title>xs&amp;zh</title>
+    <updated>2025-05-07T12:57:11.652Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://xusang-zh.github.io/myblog/"/>
+    <link rel="self" href="https://xusang-zh.github.io/myblog/atom.xml"/>
+    <subtitle>xs&amp;zh的小窝窝</subtitle>
+    <logo>https://xusang-zh.github.io/myblog/images/avatar.png</logo>
+    <icon>https://xusang-zh.github.io/myblog/favicon.ico</icon>
+    <rights>All rights reserved 2025, xs&amp;zh</rights>
+    <entry>
+        <title type="html"><![CDATA[使用dockerfile构建gosvr并运行]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/shi-yong-dockerfile-gou-jian-gosvr-bing-yun-xing/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/shi-yong-dockerfile-gou-jian-gosvr-bing-yun-xing/">
+        </link>
+        <updated>2025-05-07T12:51:52.000Z</updated>
+        <content type="html"><![CDATA[<ul>
+<li>编写Dockerfile文件</li>
+</ul>
+<pre><code class="language-Docker">FROM crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/gosbuild:v1.0
+RUN mkdir -p /home/game
+WORKDIR /home/game
+
+RUN mkdir -p ./api
+RUN mkdir -p ./hotupdate
+RUN mkdir -p ./server/config
+RUN mkdir -p ./server/games
+RUN mkdir -p ./server/run
+
+#安装时区包
+RUN apt-get update &amp;&amp; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata &amp;&amp; \
+    rm -rf /var/lib/apt/lists/* \
+
+#设置时区
+ENV TZ=Asia/Shanghai
+RUN rm -f /etc/localtime &amp;&amp; \
+        cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \
+        echo &quot;Asia/Shanghai&quot; &gt; /etc/timezone
+
+ENV REDIS_PORT=16379
+RUN sed -i &quot;s/port 6379/port ${REDIS_PORT}/&quot; /etc/redis/redis.conf
+
+COPY ./start_gamesvrs.sh /home/game/
+
+RUN chmod +x ./start_gamesvrs.sh
+
+RUN sleep 2
+
+ENTRYPOINT [&quot;./start_gamesvrs.sh&quot;]
+</code></pre>
+<ul>
+<li>编写start_gamesvrs.sh内容</li>
+</ul>
+<pre><code class="language-shell">#!/bin/bash
+set -e
+service redis-server start &amp;&amp; service memcached start
+sleep 1
+
+echo &quot;begin to start hotupdate svr&quot;
+cd /home/game/hotupdate
+nohup python3 httpserver3.py &gt; /dev/null 2&gt; error.log &amp;
+
+echo &quot;begin to start game servers&quot;
+cd /home/game/server/run
+./start.sh
+
+
+echo &quot;begin to start api svr&quot;
+cd /home/game/api/main
+./apiSvr &gt; /dev/null 2&gt; api_err.log #注意要有一个前台进程，否则docker会退出
+
+exec &quot;$@&quot;
+</code></pre>
+<ul>
+<li>上传dockerfile和start_gamesvrs.sh脚本到服务器的/home/game目录下</li>
+<li>执行构建</li>
+</ul>
+<pre><code class="language-shell">docker build -t my_image_name .
+</code></pre>
+<ul>
+<li>运行容器并追踪日志</li>
+</ul>
+<pre><code class="language-shell">docker run ..... #运行命令查看另一篇docker版部署gosvr
+docker logs -f container_id
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[ubuntu部署rocketchat，docker版]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/ubuntu-bu-shu-rocketchatdocker-ban/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/ubuntu-bu-shu-rocketchatdocker-ban/">
+        </link>
+        <updated>2025-05-06T12:40:29.000Z</updated>
+        <content type="html"><![CDATA[<ul>
+<li>首先，要拉取相关docker镜像，mongodb和rockatchat</li>
+</ul>
+<pre><code class="language-shell">docker pull mongo:5.0
+docker pull crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/rocketchat:7.5.1
+</code></pre>
+<ul>
+<li>然后运行容器</li>
+</ul>
+<pre><code class="language-shell">docker run --name rocketchat-mongodb -v /home/rocket.chat/mongodb/data:/data/db -d mongo:5.0
+
+docker run --name rocketchat --link rocketchat-mongodb:mongo -v /home/rocket.chat/uploads:/app/uploads -p 3000:3000 -e ROCKETCHAT_PORT=3000 -e ROOT_URL=http://127.0.0.1:3000 -e ROCKETCHAT_ADMIN_USERNAME=admin -e ROCKETCHAT_ADMIN_PASSWORD=password -d crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/rocketchat:7.5.1
+</code></pre>
+<ul>
+<li>然后打开127.0.0.1:3000，按照提示初始化workspace</li>
+</ul>
+<blockquote>
+<p>有个注意点就是离线注册workspace，需要先把key复制到<code>https://cloud.rocket.chat/</code>云上，然后把得到的值再复制回本地步骤中</p>
+</blockquote>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[配置go-websvr，docker版]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/pei-zhi-go-websvrdocker-ban/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/pei-zhi-go-websvrdocker-ban/">
+        </link>
+        <updated>2025-04-29T12:07:58.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="一-运行容器">一、运行容器</h1>
+<p>首先登录阿里云拉去镜像</p>
+<pre><code class="language-shell">docker login --username=火龙罐头 crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com
+docker pull crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/gosbuild:v1.0
+</code></pre>
+<p>运行容器命令</p>
+<pre><code class="language-shell">docker run -itd --name websvr \
+-p 13141:13141 \
+-p 9123:9123 \
+-v /home/game/websvr:/home/game/websvr \
+ crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/websvrbuild:v1.0
+</code></pre>
+<p>进入到容器</p>
+<pre><code class="language-shell">docker exec -it websvr /bin/bash
+</code></pre>
+<p>netstat -luntp #查看端口是否监听</p>
+<h1 id="二-编译上传文件">二、编译上传文件</h1>
+<p>该步骤详情链接<a href="/post/linux-bu-shu-golang-fu-wu-duan-liu-cheng/">点击前往</a></p>
+<h1 id="三-运行服务">三、运行服务</h1>
+<ul>
+<li>启动backend服务--&gt;后台主服务</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/websvr
+nohup ./backend &gt; /dev/null 2&gt; report_err.log &amp;
+</code></pre>
+<ul>
+<li>启动report服务--&gt;定时任务统计数据</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/websvr
+nohup ./report &gt; /dev/null 2&gt; report_err.log &amp;
+</code></pre>
+<ul>
+<li>增加定时任务启动gencp.sh--&gt;定时统计cooper数据，供cooperarchive接口调用</li>
+</ul>
+<pre><code class="language-shell">chmod +x /home/game/websvr/statistics/gencp.sh
+crontab -e
+0 0 * * * sleep 5 &amp;&amp; /home/game/websvr/report/gencp.sh &gt;&gt; &quot;/home/game/websvr/report/cronlog/cron_$(date +\%Y-\%m).log&quot; 2&gt;&amp;1
+#然后:wq退出
+crontab -l #查看任务
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Shader效果汇总]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/shader-xiao-guo-hui-zong/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/shader-xiao-guo-hui-zong/">
+        </link>
+        <updated>2025-04-03T04:12:29.000Z</updated>
+        <content type="html"><![CDATA[<p><a href="https://blog.csdn.net/linxinfa/article/details/108049048">https://blog.csdn.net/linxinfa/article/details/108049048</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[主机不进入docker容器，直接向容器发送执行命令]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/zhu-ji-bu-jin-ru-docker-rong-qi-zhi-jie-xiang-rong-qi-fa-song-zhi-xing-ming-ling/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/zhu-ji-bu-jin-ru-docker-rong-qi-zhi-jie-xiang-rong-qi-fa-song-zhi-xing-ming-ling/">
+        </link>
+        <updated>2025-04-02T08:24:12.000Z</updated>
+        <content type="html"><![CDATA[<p>在宿主机上不进入 Docker 容器，但直接向容器发送并执行命令，可以使用 <code>docker exec</code> 命令。以下是几种常见的方法：</p>
+<hr>
+<h2 id="1-使用-docker-exec-执行单条命令"><strong>1. 使用 <code>docker exec</code> 执行单条命令</strong></h2>
+<pre><code class="language-bash">docker exec [容器名或ID] [命令]
+</code></pre>
+<h3 id="示例"><strong>示例</strong></h3>
+<ul>
+<li>在容器内执行 <code>ls /</code>：<pre><code class="language-bash">docker exec my_container ls /
+</code></pre>
+</li>
+<li>在容器内执行 <code>echo</code>：<pre><code class="language-bash">docker exec my_container echo &quot;Hello from Host!&quot;
+</code></pre>
+</li>
+<li>在容器内运行交互式 Bash（类似 <code>docker exec -it</code>）：<pre><code class="language-bash">docker exec -it my_container /bin/bash
+</code></pre>
+</li>
+</ul>
+<h3 id="常用参数"><strong>常用参数</strong></h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code> (<code>--interactive</code>)</td>
+<td>保持 STDIN 打开（允许输入）</td>
+</tr>
+<tr>
+<td><code>-t</code> (<code>--tty</code>)</td>
+<td>分配伪终端（用于交互式 shell）</td>
+</tr>
+<tr>
+<td><code>-u</code> (<code>--user</code>)</td>
+<td>指定执行命令的用户（如 <code>-u root</code>）</td>
+</tr>
+<tr>
+<td><code>-e</code> (<code>--env</code>)</td>
+<td>设置环境变量（如 <code>-e VAR=value</code>）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-在后台运行长期命令不占用终端"><strong>2. 在后台运行长期命令（不占用终端）</strong></h2>
+<p>如果要在容器内运行一个长期任务（如启动服务），可以加 <code>-d</code>（<code>--detach</code>）：</p>
+<pre><code class="language-bash">docker exec -d my_container tail -f /var/log/syslog
+</code></pre>
+<hr>
+<h2 id="3-执行多条命令通过-sh-c"><strong>3. 执行多条命令（通过 <code>sh -c</code>）</strong></h2>
+<p>如果要在容器内运行多个命令，可以使用 <code>sh -c</code>：</p>
+<pre><code class="language-bash">docker exec my_container sh -c &quot;cd /tmp &amp;&amp; echo 'test' &gt; test.txt&quot;
+</code></pre>
+<hr>
+<h2 id="4-从宿主机传递变量或文件"><strong>4. 从宿主机传递变量或文件</strong></h2>
+<h3 id="1-传递环境变量"><strong>(1) 传递环境变量</strong></h3>
+<pre><code class="language-bash">docker exec -e MY_VAR=&quot;Hello&quot; my_container env | grep MY_VAR
+</code></pre>
+<h3 id="2-从宿主机复制文件到容器"><strong>(2) 从宿主机复制文件到容器</strong></h3>
+<pre><code class="language-bash">docker cp /host/path/file.txt my_container:/container/path/
+</code></pre>
+<h3 id="3-从容器复制文件到宿主机"><strong>(3) 从容器复制文件到宿主机</strong></h3>
+<pre><code class="language-bash">docker cp my_container:/container/path/file.txt /host/path/
+</code></pre>
+<hr>
+<h2 id="5-批量向多个容器发送命令"><strong>5. 批量向多个容器发送命令</strong></h2>
+<p>如果要向多个容器发送相同的命令，可以结合 <code>docker ps</code> 和 <code>xargs</code>：</p>
+<pre><code class="language-bash">docker ps -q | xargs -I {} docker exec {} echo &quot;Hello, Container {}!&quot;
+</code></pre>
+<ul>
+<li><code>docker ps -q</code> 列出所有运行中的容器 ID</li>
+<li><code>xargs -I {}</code> 对每个容器执行命令</li>
+</ul>
+<hr>
+<h2 id="6-在容器内执行脚本"><strong>6. 在容器内执行脚本</strong></h2>
+<p>如果有一个脚本要在容器内运行，可以：</p>
+<h3 id="1-直接传入脚本内容"><strong>(1) 直接传入脚本内容</strong></h3>
+<pre><code class="language-bash">docker exec my_container sh -c &quot;$(cat host_script.sh)&quot;
+</code></pre>
+<h3 id="2-先复制脚本再执行"><strong>(2) 先复制脚本再执行</strong></h3>
+<pre><code class="language-bash">docker cp host_script.sh my_container:/tmp/
+docker exec my_container sh /tmp/host_script.sh
+</code></pre>
+<hr>
+<h2 id="7-特殊情况处理"><strong>7. 特殊情况处理</strong></h2>
+<h3 id="1-容器没有-binbash-或-binsh"><strong>(1) 容器没有 <code>/bin/bash</code> 或 <code>/bin/sh</code></strong></h3>
+<p>如果容器是极简镜像（如 <code>scratch</code> 或 <code>alpine</code> 不带 <code>bash</code>），可以尝试直接执行二进制文件：</p>
+<pre><code class="language-bash">docker exec my_container /path/to/binary
+</code></pre>
+<h3 id="2-容器没有运行"><strong>(2) 容器没有运行</strong></h3>
+<p>如果容器未启动，必须先启动它：</p>
+<pre><code class="language-bash">docker start my_container
+docker exec my_container echo &quot;Now it's running!&quot;
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>执行单条命令</strong></td>
+<td><code>docker exec my_container ls /</code></td>
+</tr>
+<tr>
+<td><strong>进入交互式终端</strong></td>
+<td><code>docker exec -it my_container /bin/bash</code></td>
+</tr>
+<tr>
+<td><strong>后台运行命令</strong></td>
+<td><code>docker exec -d my_container tail -f /var/log/syslog</code></td>
+</tr>
+<tr>
+<td><strong>执行多条命令</strong></td>
+<td><code>docker exec my_container sh -c &quot;cmd1 &amp;&amp; cmd2&quot;</code></td>
+</tr>
+<tr>
+<td><strong>传递环境变量</strong></td>
+<td><code>docker exec -e VAR=value my_container env</code></td>
+</tr>
+<tr>
+<td><strong>复制文件</strong></td>
+<td><code>docker cp file.txt my_container:/path/</code></td>
+</tr>
+<tr>
+<td><strong>批量执行</strong></td>
+<td><code>docker ps -q | xargs -I {} docker exec {} echo &quot;Hello&quot;</code></td>
+</tr>
+</tbody>
+</table>
+<p>如果遇到权限问题（如 <code>Permission denied</code>），可以尝试 <code>-u root</code> 以 root 身份执行。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[linux系统（ubuntu）docker容器安装python3.8]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-python38/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-python38/">
+        </link>
+        <updated>2025-04-02T02:07:26.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="python38">python3.8</h1>
+<p>如果在 Ubuntu 上运行 <code>sudo apt install python3.8</code> 时遇到错误：</p>
+<pre><code>E: Package 'python3.8' has no installation candidate
+</code></pre>
+<p>这说明 <strong>默认的 Ubuntu 软件仓库没有 Python 3.8</strong>，但可以通过以下方法安装：</p>
+<hr>
+<h2 id="解决方案-1使用-deadsnakes-ppa推荐"><strong>解决方案 1：使用 <code>deadsnakes</code> PPA（推荐）</strong></h2>
+<p>适用于 <strong>Ubuntu 18.04/20.04/22.04</strong>，提供较新的 Python 版本。</p>
+<h3 id="1-添加-deadsnakes-ppa"><strong>1. 添加 <code>deadsnakes</code> PPA</strong></h3>
+<pre><code class="language-bash">sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+</code></pre>
+<h3 id="2-安装-python-38"><strong>2. 安装 Python 3.8</strong></h3>
+<pre><code class="language-bash">sudo apt install python3.8
+</code></pre>
+<h3 id="3-验证安装"><strong>3. 验证安装</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<p>输出类似：</p>
+<pre><code>Python 3.8.10
+</code></pre>
+<hr>
+<h2 id="解决方案-2从源代码编译安装"><strong>解决方案 2：从源代码编译安装</strong></h2>
+<p>适用于所有 Ubuntu 版本，但需要手动编译。</p>
+<h3 id="1-安装编译依赖"><strong>1. 安装编译依赖</strong></h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+</code></pre>
+<h3 id="2-下载-python-38-源码"><strong>2. 下载 Python 3.8 源码</strong></h3>
+<pre><code class="language-bash">wget https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tar.xz
+tar -xf Python-3.8.18.tar.xz
+cd Python-3.8.18
+</code></pre>
+<h3 id="3-编译并安装"><strong>3. 编译并安装</strong></h3>
+<pre><code class="language-bash">./configure --enable-optimizations
+make -j $(nproc)  # 多核编译加快速度
+sudo make altinstall  # 避免覆盖系统默认 Python
+</code></pre>
+<h3 id="4-验证安装"><strong>4. 验证安装</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<p>输出：</p>
+<pre><code>Python 3.8.18
+</code></pre>
+<hr>
+<h2 id="解决方案-3使用-pyenv推荐多版本管理"><strong>解决方案 3：使用 <code>pyenv</code>（推荐多版本管理）</strong></h2>
+<p>适合需要管理多个 Python 版本的用户。</p>
+<h3 id="1-安装-pyenv"><strong>1. 安装 <code>pyenv</code></strong></h3>
+<pre><code class="language-bash">curl https://pyenv.run | bash
+</code></pre>
+<p>然后按照提示添加环境变量（如 <code>~/.bashrc</code> 或 <code>~/.zshrc</code>）：</p>
+<pre><code class="language-bash">echo 'export PATH=&quot;$HOME/.pyenv/bin:$PATH&quot;' &gt;&gt; ~/.bashrc
+echo 'eval &quot;$(pyenv init --path)&quot;' &gt;&gt; ~/.bashrc
+echo 'eval &quot;$(pyenv virtualenv-init -)&quot;' &gt;&gt; ~/.bashrc
+source ~/.bashrc
+</code></pre>
+<h3 id="2-安装-python-38-2"><strong>2. 安装 Python 3.8</strong></h3>
+<pre><code class="language-bash">pyenv install 3.8.18
+</code></pre>
+<h3 id="3-设为全局默认可选"><strong>3. 设为全局默认（可选）</strong></h3>
+<pre><code class="language-bash">pyenv global 3.8.18
+</code></pre>
+<h3 id="4-验证"><strong>4. 验证</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<hr>
+<h2 id="解决方案-4使用-conda适合科学计算用户"><strong>解决方案 4：使用 <code>conda</code>（适合科学计算用户）</strong></h2>
+<p>如果使用 Anaconda/miniconda，可以直接安装 Python 3.8：</p>
+<pre><code class="language-bash">conda create -n py38 python=3.8
+conda activate py38
+python --version
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>适用场景</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>deadsnakes</code> PPA</strong></td>
+<td>Ubuntu 18.04/20.04/22.04</td>
+<td><code>sudo add-apt-repository ppa:deadsnakes/ppa</code> → <code>sudo apt install python3.8</code></td>
+</tr>
+<tr>
+<td><strong>源码编译</strong></td>
+<td>所有 Ubuntu 版本</td>
+<td><code>./configure --enable-optimizations &amp;&amp; make altinstall</code></td>
+</tr>
+<tr>
+<td><strong><code>pyenv</code></strong></td>
+<td>多版本管理</td>
+<td><code>pyenv install 3.8.18</code></td>
+</tr>
+<tr>
+<td><strong><code>conda</code></strong></td>
+<td>Anaconda 用户</td>
+<td><code>conda create -n py38 python=3.8</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>推荐方案：</strong></p>
+<ul>
+<li><strong>普通用户</strong> → <strong><code>deadsnakes</code> PPA</strong>（最简单）</li>
+<li><strong>开发者/多版本需求</strong> → <strong><code>pyenv</code></strong></li>
+<li><strong>需要完全控制版本</strong> → <strong>源码编译</strong>  (精简版成功)</li>
+</ul>
+<p>ln -s /usr/local/bin/python3.8 /usr/local/bin/python3<br>
+设置软路由</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[linux系统（ubuntu）docker容器安装memcached]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-memcached/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-memcached/">
+        </link>
+        <updated>2025-04-02T01:59:49.000Z</updated>
+        <content type="html"><![CDATA[<p>###memcached<br>
+在 Linux 系统中安装 Memcached 并设置开机启动（不使用 <code>systemctl</code>，适用于 <strong>SysVinit</strong> 或 <strong>Upstart</strong> 系统），可以按照以下步骤操作：</p>
+<hr>
+<h2 id="1-安装-memcached"><strong>1. 安装 Memcached</strong></h2>
+<h3 id="debianubuntu"><strong>Debian/Ubuntu</strong></h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install memcached -y
+</code></pre>
+<h3 id="rhelcentos-7-或更早版本"><strong>RHEL/CentOS 7 或更早版本</strong></h3>
+<pre><code class="language-bash">sudo yum install epel-release -y  # 如果尚未安装 EPEL
+sudo yum install memcached -y
+</code></pre>
+<hr>
+<h2 id="2-启动-memcached"><strong>2. 启动 Memcached</strong></h2>
+<h3 id="手动启动-memcached"><strong>手动启动 Memcached</strong></h3>
+<pre><code class="language-bash">sudo service memcached start
+# 或
+sudo /etc/init.d/memcached start
+</code></pre>
+<h3 id="检查运行状态"><strong>检查运行状态</strong></h3>
+<pre><code class="language-bash">sudo service memcached status
+# 或
+ps aux | grep memcached
+</code></pre>
+<p>如果看到 <code>memcached</code> 进程，说明服务已启动。</p>
+<hr>
+<h2 id="3-设置开机自启动"><strong>3. 设置开机自启动</strong></h2>
+<h3 id="方法-1使用-update-rcddebianubuntu"><strong>方法 1：使用 <code>update-rc.d</code>（Debian/Ubuntu）</strong></h3>
+<pre><code class="language-bash">sudo update-rc.d memcached defaults
+</code></pre>
+<p>这会添加 Memcached 到默认运行级别（2-5）。</p>
+<h3 id="方法-2使用-chkconfigrhelcentos"><strong>方法 2：使用 <code>chkconfig</code>（RHEL/CentOS）</strong></h3>
+<pre><code class="language-bash">sudo chkconfig --add memcached
+sudo chkconfig memcached on
+</code></pre>
+<h3 id="方法-3手动修改-etcrclocal通用方法"><strong>方法 3：手动修改 <code>/etc/rc.local</code>（通用方法）</strong></h3>
+<p>如果 <code>update-rc.d</code> 或 <code>chkconfig</code> 不可用，可以编辑 <code>/etc/rc.local</code>：</p>
+<pre><code class="language-bash">sudo nano /etc/rc.local
+</code></pre>
+<p>在 <code>exit 0</code> 之前添加：</p>
+<pre><code class="language-bash">service memcached start
+</code></pre>
+<p>保存后赋予执行权限：</p>
+<pre><code class="language-bash">sudo chmod +x /etc/rc.local
+</code></pre>
+<hr>
+<h2 id="4-验证-memcached-是否开机启动"><strong>4. 验证 Memcached 是否开机启动</strong></h2>
+<p>重启系统：</p>
+<pre><code class="language-bash">sudo reboot
+</code></pre>
+<p>然后检查 Memcached 是否运行：</p>
+<pre><code class="language-bash">ps aux | grep memcached
+</code></pre>
+<p>或连接测试：</p>
+<pre><code class="language-bash">telnet 127.0.0.1 11211
+</code></pre>
+<p>输入 <code>stats</code>，如果返回数据，说明 Memcached 已正常运行。</p>
+<hr>
+<h2 id="5-可选配置-memcached"><strong>5. （可选）配置 Memcached</strong></h2>
+<p>默认配置文件位置：</p>
+<ul>
+<li><strong>Debian/Ubuntu</strong>: <code>/etc/memcached.conf</code></li>
+<li><strong>RHEL/CentOS</strong>: <code>/etc/sysconfig/memcached</code><br>
+修改memcached.conf中 -l 127.0.0.1改为0.0.0.0<br>
+修改后重启：</li>
+</ul>
+<pre><code class="language-bash">sudo service memcached restart
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>安装 Memcached</strong></td>
+<td><code>sudo apt install memcached</code> (Debian/Ubuntu)<br><code>sudo yum install memcached</code> (RHEL/CentOS)</td>
+</tr>
+<tr>
+<td><strong>启动 Memcached</strong></td>
+<td><code>sudo service memcached start</code></td>
+</tr>
+<tr>
+<td><strong>开机自启</strong></td>
+<td><code>sudo update-rc.d memcached defaults</code> (Debian/Ubuntu)<br><code>sudo chkconfig memcached on</code> (RHEL/CentOS)<br>或修改 <code>/etc/rc.local</code></td>
+</tr>
+<tr>
+<td><strong>检查状态</strong></td>
+<td><code>ps aux | grep memcached</code><br><code>telnet 127.0.0.1 11211</code></td>
+</tr>
+</tbody>
+</table>
+<p>这样即使没有 <code>systemctl</code>，Memcached 也能在开机时自动启动。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[linux系统（ubuntu）docker容器安装redis]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-redis/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-redis/">
+        </link>
+        <updated>2025-04-02T01:58:56.000Z</updated>
+        <content type="html"><![CDATA[<p>###redis</p>
+<pre><code class="language-shell">apt-get install redis-server
+systemctl start redis-server
+</code></pre>
+<p>如果你的 Ubuntu 系统没有 <code>systemctl</code>（可能是因为使用的是较老的版本，如 Ubuntu 14.04 或更早，使用 <code>upstart</code> 或 <code>sysvinit</code> 而不是 <code>systemd</code>），你可以使用以下方法安装 Redis 并设置开机启动。</p>
+<hr>
+<h3 id="1-更新软件包列表并安装-redis"><strong>1. 更新软件包列表并安装 Redis</strong></h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install redis-server -y
+</code></pre>
+<hr>
+<h3 id="2-检查-redis-是否已启动"><strong>2. 检查 Redis 是否已启动</strong></h3>
+<p>安装完成后，Redis 通常会自动启动。检查 Redis 状态：</p>
+<pre><code class="language-bash">sudo service redis-server status
+# 或者
+sudo /etc/init.d/redis-server status
+</code></pre>
+<p>如果没有启动，手动启动：</p>
+<pre><code class="language-bash">sudo service redis-server start
+# 或者
+sudo /etc/init.d/redis-server start
+</code></pre>
+<hr>
+<h3 id="3-设置-redis-开机启动"><strong>3. 设置 Redis 开机启动</strong></h3>
+<h4 id="方法-1使用-update-rcd适用于-sysvinit"><strong>方法 1：使用 <code>update-rc.d</code>（适用于 <code>sysvinit</code>）</strong></h4>
+<pre><code class="language-bash">sudo update-rc.d redis-server defaults
+</code></pre>
+<p>这会创建符号链接，使 Redis 在系统启动时自动运行。</p>
+<h4 id="方法-2使用-chkconfig某些旧版-ubuntu"><strong>方法 2：使用 <code>chkconfig</code>（某些旧版 Ubuntu）</strong></h4>
+<p>如果 <code>update-rc.d</code> 不可用，可以尝试：</p>
+<pre><code class="language-bash">sudo chkconfig --add redis-server
+sudo chkconfig redis-server on
+</code></pre>
+<h4 id="方法-3手动修改-etcrclocal备选方案"><strong>方法 3：手动修改 <code>/etc/rc.local</code>（备选方案）</strong></h4>
+<p>如果上述方法都不适用，可以编辑 <code>/etc/rc.local</code> 文件：</p>
+<pre><code class="language-bash">sudo nano /etc/rc.local
+</code></pre>
+<p>在 <code>exit 0</code> 之前添加：</p>
+<pre><code class="language-bash">service redis-server start
+</code></pre>
+<p>然后保存并退出，并确保 <code>rc.local</code> 有执行权限：</p>
+<pre><code class="language-bash">sudo chmod +x /etc/rc.local
+</code></pre>
+<hr>
+<h3 id="4-验证-redis-是否正常工作"><strong>4. 验证 Redis 是否正常工作</strong></h3>
+<pre><code class="language-bash">redis-cli ping
+</code></pre>
+<p>如果返回 <code>PONG</code>，说明 Redis 正常运行。</p>
+<hr>
+<h3 id="5-可选配置-redis"><strong>5. （可选）配置 Redis</strong></h3>
+<p>如果需要修改 Redis 配置（如绑定 IP、设置密码等）：</p>
+<pre><code class="language-bash">sudo nano /etc/redis/redis.conf
+</code></pre>
+<p>修改后重启 Redis：</p>
+<pre><code class="language-bash">sudo service redis-server restart
+</code></pre>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>安装 Redis</strong>：<code>sudo apt install redis-server -y</code></li>
+<li><strong>启动 Redis</strong>：<code>sudo service redis-server start</code></li>
+<li><strong>开机自启</strong>：
+<ul>
+<li><code>sudo update-rc.d redis-server defaults</code>（推荐）</li>
+<li>或手动修改 <code>/etc/rc.local</code></li>
+</ul>
+</li>
+<li><strong>测试</strong>：<code>redis-cli ping</code></li>
+</ul>
+<p>这样即使没有 <code>systemctl</code>，Redis 也能在开机时自动启动。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[配置go服务端，docker版]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/pei-zhi-go-fu-wu-duan-docker-ban/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/pei-zhi-go-fu-wu-duan-docker-ban/">
+        </link>
+        <updated>2025-04-01T10:53:11.000Z</updated>
+        <content type="html"><![CDATA[<h1 id="一-运行容器">一、运行容器</h1>
+<p>首先登录阿里云拉去镜像</p>
+<pre><code class="language-shell">docker login --username=火龙罐头 crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com
+docker pull crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/gosbuild:v1.0
+</code></pre>
+<p>运行容器命令</p>
+<pre><code class="language-shell">docker run -itd --name gosvr \
+-p 11211:11211 \
+-p 8000:8000 \
+-p 8351:8351 \
+-p 8353:8353 \
+-p 8356:8356 \
+-p 8357:8357 \
+-p 23227:23227 \
+-p 7300:7300 \
+-p 21000:21000 \
+-p 6001:6001 \
+-p 52001:52001 \
+-p 7000:7000 \
+-v /home/game:/home/game \
+ crpi-uosor4a2jfr9ugr4.cn-hangzhou.personal.cr.aliyuncs.com/bagedan/gosbuild:v2.0
+</code></pre>
+<p>进入到容器</p>
+<pre><code class="language-shell">docker exec -it gosvr /bin/bash
+</code></pre>
+<p>手动启动redis和memcached</p>
+<pre><code class="language-shell">#记得先修改redis端口
+vim /etc/redis/redis.cnf
+#时区也要确认一下，新容器需要安装时区包
+apt update &amp;&amp; apt install tzdata
+#启动服务
+service redis-server start &amp;&amp; service memcached start
+#如果存在就先停止
+service redis-server stop
+service memcached stop
+
+netstat -luntp #查看端口是否监听
+</code></pre>
+<h1 id="二-编译上传文件">二、编译上传文件</h1>
+<p>该步骤详情链接<a href="/post/linux-bu-shu-golang-fu-wu-duan-liu-cheng/">点击前往</a></p>
+<h1 id="三-运行服务">三、运行服务</h1>
+<ul>
+<li>启动文件服务</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/hotupdate
+./start.sh
+</code></pre>
+<ul>
+<li>启动大厅及其他辅助服务</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/server/run
+./start.sh
+</code></pre>
+<ul>
+<li>启动api服务</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/api/main
+nohup ./apiserver  &gt; /dev/null 2&gt; error.log &amp;
+</code></pre>
+<ul>
+<li>启动游戏服务</li>
+</ul>
+<pre><code class="language-shell">cd /home/game/server/games/lkpy_red1
+nohup  ./gameSvr  -cfg ./gameServerApp.lua  -name LKPY_RED1 -comcfg /home/game/server/config/json/common.json &gt; /dev/null 2&gt; error.log &amp;
+</code></pre>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[将本地目录初始化为Git仓库并推送到远程仓库]]></title>
+        <id>https://xusang-zh.github.io/myblog/post/jiang-ben-di-mu-lu-chu-shi-hua-wei-git-cang-ku-bing-tui-song-dao-yuan-cheng-cang-ku/</id>
+        <link href="https://xusang-zh.github.io/myblog/post/jiang-ben-di-mu-lu-chu-shi-hua-wei-git-cang-ku-bing-tui-song-dao-yuan-cheng-cang-ku/">
+        </link>
+        <updated>2025-04-01T05:31:18.000Z</updated>
+        <content type="html"><![CDATA[<p>要将本地目录A初始化为Git仓库并推送到远程仓库，请按照以下步骤操作：</p>
+<h3 id="1-进入目录a">1. 进入目录A</h3>
+<pre><code class="language-bash">cd /path/to/directory_A
+</code></pre>
+<h3 id="2-初始化git仓库">2. 初始化Git仓库</h3>
+<pre><code class="language-bash">git init
+</code></pre>
+<h3 id="3-添加远程仓库地址">3. 添加远程仓库地址</h3>
+<pre><code class="language-bash">git remote add origin 你的远程仓库URL
+</code></pre>
+<p>（将&quot;你的远程仓库URL&quot;替换为你实际的远程仓库地址，如：<code>git@github.com:username/repo.git</code>）</p>
+<h3 id="4-添加所有文件到暂存区">4. 添加所有文件到暂存区</h3>
+<pre><code class="language-bash">git add .
+</code></pre>
+<p>（这个命令会添加目录下所有文件和子目录，包括隐藏文件）</p>
+<h3 id="5-提交更改">5. 提交更改</h3>
+<pre><code class="language-bash">git commit -m &quot;初始提交&quot;
+</code></pre>
+<h3 id="6-推送到远程仓库">6. 推送到远程仓库</h3>
+<pre><code class="language-bash">git push -u origin master
+</code></pre>
+<p>（如果是新建的GitHub仓库，默认分支可能是main而不是master，如果是这样，使用：<code>git push -u origin main</code>）</p>
+<h3 id="补充说明">补充说明：</h3>
+<ul>
+<li>
+<p>如果远程仓库不是空的（比如包含了README或.gitignore等初始化文件），你需要先拉取远程内容：</p>
+<pre><code class="language-bash">git pull origin master --allow-unrelated-histories
+</code></pre>
+<p>然后再推送：</p>
+<pre><code class="language-bash">git push -u origin master
+</code></pre>
+</li>
+<li>
+<p>如果你想忽略某些文件，可以创建<code>.gitignore</code>文件并在其中列出要忽略的文件模式</p>
+</li>
+<li>
+<p>如果你使用的是GitHub，创建仓库时可以选择不初始化README文件，这样远程仓库就是空的，避免冲突</p>
+</li>
+</ul>
+<p>这样就完成了将本地目录初始化为Git仓库并推送到远程的全部操作。</p>
+]]></content>
+    </entry>
+</feed>

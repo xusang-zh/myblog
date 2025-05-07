@@ -1,0 +1,246 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>如果github下的多个仓库对应多个密钥，如何在windows的.ssh中配置不同的仓库使用不同的密钥 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="如果github下的多个仓库对应多个密钥，如何在windows的.ssh中配置不同的仓库使用不同的密钥 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="0.创建公钥命令
+ssh-keygen -m PEM -t ed25519 -C &quot;your.email@example.com&quot; -f yourfilename  #自定义名称
+
+1. 创建/编辑 SSH 配置文件
+#..." />
+    <meta name="keywords" content="程序相关,git" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              如果github下的多个仓库对应多个密钥，如何在windows的.ssh中配置不同的仓库使用不同的密钥
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-12-05
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/fIKrGjtu_Lj/" class="post-tag">
+                  # git
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h3 id="0创建公钥命令">0.创建公钥命令</h3>
+<pre><code class="language-bash">ssh-keygen -m PEM -t ed25519 -C &quot;your.email@example.com&quot; -f yourfilename  #自定义名称
+</code></pre>
+<h3 id="1-创建编辑-ssh-配置文件">1. 创建/编辑 SSH 配置文件</h3>
+<pre><code class="language-bash"># 在 C:\Users\YourUsername\.ssh\config 中配置
+# 如果文件不存在，创建它
+
+# GitHub 仓库1
+Host git-repo1 # 自定义的主机名称，后面设置仓库远程地址的时候用
+    HostName github.com  # 如果是其他仓库，换成仓库对应的域名，如：e.coding.net
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo1
+
+# GitHub 仓库2
+Host git-repo2
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo2
+
+# GitHub 仓库3
+Host git-repo3
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_repo3
+</code></pre>
+<h3 id="2-配置仓库远程地址">2. 配置仓库远程地址</h3>
+<pre><code class="language-bash"># 仓库1
+git remote set-url origin git@git-repo1:username/repo1.git # 前面配置的Host在这里用，替换仓库地址中对应的HostName
+
+# 仓库2
+git remote set-url origin git@git-repo2:username/repo2.git
+
+# 仓库3
+git remote set-url origin git@git-repo3:username/repo3.git
+</code></pre>
+<h3 id="4-验证配置">4. 验证配置</h3>
+<pre><code class="language-bash"># 测试仓库1的连接
+ssh -T git@git-repo1
+
+# 测试仓库2的连接
+ssh -T git@git-repo2
+
+# 测试仓库3的连接
+ssh -T git@git-repo3
+</code></pre>
+<h3 id="5-克隆和使用">5. 克隆和使用</h3>
+<pre><code class="language-bash"># 克隆个人仓库
+git clone git@git-repo1:username/repo1.git
+
+# 克隆工作仓库
+git clone git@git-repo2:username/repo2.git
+
+# 克隆项目仓库
+git clone git@git-repo3:username/repo3.git
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#0%E5%88%9B%E5%BB%BA%E5%85%AC%E9%92%A5%E5%91%BD%E4%BB%A4">0.创建公钥命令</a></li>
+<li><a href="#1-%E5%88%9B%E5%BB%BA%E7%BC%96%E8%BE%91-ssh-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6">1. 创建/编辑 SSH 配置文件</a></li>
+<li><a href="#2-%E9%85%8D%E7%BD%AE%E4%BB%93%E5%BA%93%E8%BF%9C%E7%A8%8B%E5%9C%B0%E5%9D%80">2. 配置仓库远程地址</a></li>
+<li><a href="#4-%E9%AA%8C%E8%AF%81%E9%85%8D%E7%BD%AE">4. 验证配置</a></li>
+<li><a href="#5-%E5%85%8B%E9%9A%86%E5%92%8C%E4%BD%BF%E7%94%A8">5. 克隆和使用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/h5-you-xi-de-ke-hu-duan-he-fu-wu-duan-zhi-jian-de-tong-xin-shi-yong-websocket-huan-shi-tcp/">
+              <h3 class="post-title">
+                h5游戏的客户端和服务端之间的通信，是用websocket还是tcp
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

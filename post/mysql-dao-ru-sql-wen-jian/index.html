@@ -1,0 +1,197 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>mysql 导入sql文件 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="mysql 导入sql文件 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="首先，要确保mysql的配置中，导入包的上限大小和超时时间。
+打开my.ini，在修改字段：
+max_allowed_packet = 10G    # 允许数据包的大小  
+wait_timeout = 2880000    # 是默认的..." />
+    <meta name="keywords" content="mysql" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              mysql 导入sql文件
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/BCgGw1b16Fq/" class="post-tag">
+                  # mysql
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>首先，要确保mysql的配置中，导入包的上限大小和超时时间。</p>
+<p>打开<code>my.ini</code>，在修改字段：</p>
+<pre><code class="language-python">max_allowed_packet = 10G    # 允许数据包的大小  
+wait_timeout = 2880000    # 是默认的最大超时时间  
+interactive_timeout = 2880000    # 是默认最大的超时时间  
+</code></pre>
+<p>然后打开进入mysql console：<br>
+1、执行“ <code>create database base_name CHARACTER SET utf8 COLLATE utf8_general_ci;</code>”创建一个名为<code>base_name</code>的数据库并设置utf8编码</p>
+<p>2、输入”<code>show databases;</code>”就能查看自己创建的数据库</p>
+<p>3、输入”<code>use base_name;</code>”，开始使用这个数据库。</p>
+<p>4、开始导入sql文件，输入”<code>source path</code>”，path就是你sql文件的完整路径（网上说文件路径中的“\”要全部换成“/”，但是我没有换也执行成功了，所以这里留个疑问）</p>
+<p>5、输入”<code>show tables;</code>”，就能看到导入的表了</p>
+<p>遇到的坑：<br>
+·导入的时候，报错<code>Unknown command '\''</code><br>
+是因为sql文件的编码和mysql的编码不一致导致，可以使用命令<code>show variables like 'character%';</code>查看<br>
+修改编码：<br>
+可以使用命令<code>character-set-server=utf8</code>但是这样只是本次有效，重新打开mysql又恢复到默认了<br>
+所以需要修改<code>my.ini</code>文件</p>
+<pre><code>[client]
+default-character-set=utf8
+[mysql]
+default-character-set=utf8
+[mysqld]
+default-character-set=utf8
+</code></pre>
+<p>这3个标签都加上这个，然后重启后导入没问题</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/jiracong-bei-fen-zhong-hui-fu-shu-ju-yu-dao-de-wen-ti/">
+              <h3 class="post-title">
+                JIRA，从备份中恢复数据遇到的问题
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

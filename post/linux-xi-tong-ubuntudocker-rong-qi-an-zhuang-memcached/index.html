@@ -1,0 +1,293 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>linux系统（ubuntu）docker容器安装memcached | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="linux系统（ubuntu）docker容器安装memcached | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="###memcached
+在 Linux 系统中安装 Memcached 并设置开机启动（不使用 systemctl，适用于 SysVinit 或 Upstart 系统），可以按照以下步骤操作：
+
+1. 安装 Memcached
+Debia..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              linux系统（ubuntu）docker容器安装memcached
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-04-02
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>###memcached<br>
+在 Linux 系统中安装 Memcached 并设置开机启动（不使用 <code>systemctl</code>，适用于 <strong>SysVinit</strong> 或 <strong>Upstart</strong> 系统），可以按照以下步骤操作：</p>
+<hr>
+<h2 id="1-安装-memcached"><strong>1. 安装 Memcached</strong></h2>
+<h3 id="debianubuntu"><strong>Debian/Ubuntu</strong></h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install memcached -y
+</code></pre>
+<h3 id="rhelcentos-7-或更早版本"><strong>RHEL/CentOS 7 或更早版本</strong></h3>
+<pre><code class="language-bash">sudo yum install epel-release -y  # 如果尚未安装 EPEL
+sudo yum install memcached -y
+</code></pre>
+<hr>
+<h2 id="2-启动-memcached"><strong>2. 启动 Memcached</strong></h2>
+<h3 id="手动启动-memcached"><strong>手动启动 Memcached</strong></h3>
+<pre><code class="language-bash">sudo service memcached start
+# 或
+sudo /etc/init.d/memcached start
+</code></pre>
+<h3 id="检查运行状态"><strong>检查运行状态</strong></h3>
+<pre><code class="language-bash">sudo service memcached status
+# 或
+ps aux | grep memcached
+</code></pre>
+<p>如果看到 <code>memcached</code> 进程，说明服务已启动。</p>
+<hr>
+<h2 id="3-设置开机自启动"><strong>3. 设置开机自启动</strong></h2>
+<h3 id="方法-1使用-update-rcddebianubuntu"><strong>方法 1：使用 <code>update-rc.d</code>（Debian/Ubuntu）</strong></h3>
+<pre><code class="language-bash">sudo update-rc.d memcached defaults
+</code></pre>
+<p>这会添加 Memcached 到默认运行级别（2-5）。</p>
+<h3 id="方法-2使用-chkconfigrhelcentos"><strong>方法 2：使用 <code>chkconfig</code>（RHEL/CentOS）</strong></h3>
+<pre><code class="language-bash">sudo chkconfig --add memcached
+sudo chkconfig memcached on
+</code></pre>
+<h3 id="方法-3手动修改-etcrclocal通用方法"><strong>方法 3：手动修改 <code>/etc/rc.local</code>（通用方法）</strong></h3>
+<p>如果 <code>update-rc.d</code> 或 <code>chkconfig</code> 不可用，可以编辑 <code>/etc/rc.local</code>：</p>
+<pre><code class="language-bash">sudo nano /etc/rc.local
+</code></pre>
+<p>在 <code>exit 0</code> 之前添加：</p>
+<pre><code class="language-bash">service memcached start
+</code></pre>
+<p>保存后赋予执行权限：</p>
+<pre><code class="language-bash">sudo chmod +x /etc/rc.local
+</code></pre>
+<hr>
+<h2 id="4-验证-memcached-是否开机启动"><strong>4. 验证 Memcached 是否开机启动</strong></h2>
+<p>重启系统：</p>
+<pre><code class="language-bash">sudo reboot
+</code></pre>
+<p>然后检查 Memcached 是否运行：</p>
+<pre><code class="language-bash">ps aux | grep memcached
+</code></pre>
+<p>或连接测试：</p>
+<pre><code class="language-bash">telnet 127.0.0.1 11211
+</code></pre>
+<p>输入 <code>stats</code>，如果返回数据，说明 Memcached 已正常运行。</p>
+<hr>
+<h2 id="5-可选配置-memcached"><strong>5. （可选）配置 Memcached</strong></h2>
+<p>默认配置文件位置：</p>
+<ul>
+<li><strong>Debian/Ubuntu</strong>: <code>/etc/memcached.conf</code></li>
+<li><strong>RHEL/CentOS</strong>: <code>/etc/sysconfig/memcached</code><br>
+修改memcached.conf中 -l 127.0.0.1改为0.0.0.0<br>
+修改后重启：</li>
+</ul>
+<pre><code class="language-bash">sudo service memcached restart
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>安装 Memcached</strong></td>
+<td><code>sudo apt install memcached</code> (Debian/Ubuntu)<br><code>sudo yum install memcached</code> (RHEL/CentOS)</td>
+</tr>
+<tr>
+<td><strong>启动 Memcached</strong></td>
+<td><code>sudo service memcached start</code></td>
+</tr>
+<tr>
+<td><strong>开机自启</strong></td>
+<td><code>sudo update-rc.d memcached defaults</code> (Debian/Ubuntu)<br><code>sudo chkconfig memcached on</code> (RHEL/CentOS)<br>或修改 <code>/etc/rc.local</code></td>
+</tr>
+<tr>
+<td><strong>检查状态</strong></td>
+<td><code>ps aux | grep memcached</code><br><code>telnet 127.0.0.1 11211</code></td>
+</tr>
+</tbody>
+</table>
+<p>这样即使没有 <code>systemctl</code>，Memcached 也能在开机时自动启动。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85-memcached"><strong>1. 安装 Memcached</strong></a>
+<ul>
+<li><a href="#debianubuntu"><strong>Debian/Ubuntu</strong></a></li>
+<li><a href="#rhelcentos-7-%E6%88%96%E6%9B%B4%E6%97%A9%E7%89%88%E6%9C%AC"><strong>RHEL/CentOS 7 或更早版本</strong></a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%90%AF%E5%8A%A8-memcached"><strong>2. 启动 Memcached</strong></a>
+<ul>
+<li><a href="#%E6%89%8B%E5%8A%A8%E5%90%AF%E5%8A%A8-memcached"><strong>手动启动 Memcached</strong></a></li>
+<li><a href="#%E6%A3%80%E6%9F%A5%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81"><strong>检查运行状态</strong></a></li>
+</ul>
+</li>
+<li><a href="#3-%E8%AE%BE%E7%BD%AE%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF%E5%8A%A8"><strong>3. 设置开机自启动</strong></a>
+<ul>
+<li><a href="#%E6%96%B9%E6%B3%95-1%E4%BD%BF%E7%94%A8-update-rcddebianubuntu"><strong>方法 1：使用 <code>update-rc.d</code>（Debian/Ubuntu）</strong></a></li>
+<li><a href="#%E6%96%B9%E6%B3%95-2%E4%BD%BF%E7%94%A8-chkconfigrhelcentos"><strong>方法 2：使用 <code>chkconfig</code>（RHEL/CentOS）</strong></a></li>
+<li><a href="#%E6%96%B9%E6%B3%95-3%E6%89%8B%E5%8A%A8%E4%BF%AE%E6%94%B9-etcrclocal%E9%80%9A%E7%94%A8%E6%96%B9%E6%B3%95"><strong>方法 3：手动修改 <code>/etc/rc.local</code>（通用方法）</strong></a></li>
+</ul>
+</li>
+<li><a href="#4-%E9%AA%8C%E8%AF%81-memcached-%E6%98%AF%E5%90%A6%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8"><strong>4. 验证 Memcached 是否开机启动</strong></a></li>
+<li><a href="#5-%E5%8F%AF%E9%80%89%E9%85%8D%E7%BD%AE-memcached"><strong>5. （可选）配置 Memcached</strong></a></li>
+<li><a href="#%E6%80%BB%E7%BB%93"><strong>总结</strong></a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-redis/">
+              <h3 class="post-title">
+                linux系统（ubuntu）docker容器安装redis
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

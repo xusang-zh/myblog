@@ -1,0 +1,206 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Go在windows下编译linux文件，并部署 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Go在windows下编译linux文件，并部署 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1.先要cd到go.mod所在的目录下
+2.执行以下脚本
+set GOROOT=c:\Go
+set GOARCH=amd64
+set GOOS=linux
+go build -o filename main.go
+scp ../../con..." />
+    <meta name="keywords" content="Go" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Go在windows下编译linux文件，并部署
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mV40mMrAwiL/" class="post-tag">
+                  # Go
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>1.先要cd到<code>go.mod</code>所在的目录下<br>
+2.执行以下脚本</p>
+<pre><code class="language-shell">set GOROOT=c:\Go
+set GOARCH=amd64
+set GOOS=linux
+go build -o filename main.go
+scp ../../config/configfilename.bytes root@remoteip:/data/api/config
+scp filename root@remoteip:/data/api/bin/
+</code></pre>
+<blockquote>
+<h2 id="注意这里第一条set-gorootcgo不加的话编译出来的会是exe的不知道为啥脚本里的remoteip要换成对应的远程服务器ip地址">注意：这里第一条<code>set GOROOT=c:\Go</code>不加的话，编译出来的会是<code>exe</code>的，不知道为啥<br>
+脚本里的remoteip要换成对应的远程服务器ip地址</h2>
+<p>还有个情况就是，就算按照上面的写，可能出来的还是exe，这个时候就连在一起写，不知道为啥，网上说是每句的结束有空格什么的</p>
+</blockquote>
+<pre><code class="language-shell">set GOROOT=c:\Go&amp;&amp;set GOARCH=amd64&amp;&amp;set GOOS=linux&amp;&amp;go build -o outputname main.go
+</code></pre>
+<p>3.执行脚本的时候，会要求输入远程服务器密码，输入后就会开始传输<br>
+4.完成之后进入到远程主机上，到文件所在目录，使用命令给文件赋予权限</p>
+<pre><code class="language-shell">chmod 777 filename
+</code></pre>
+<p>5.然后运行文件，可以后台运行</p>
+<pre><code class="language-shell">nohup ./filename &amp;
+</code></pre>
+<p>6.结束</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E6%B3%A8%E6%84%8F%E8%BF%99%E9%87%8C%E7%AC%AC%E4%B8%80%E6%9D%A1set-gorootcgo%E4%B8%8D%E5%8A%A0%E7%9A%84%E8%AF%9D%E7%BC%96%E8%AF%91%E5%87%BA%E6%9D%A5%E7%9A%84%E4%BC%9A%E6%98%AFexe%E7%9A%84%E4%B8%8D%E7%9F%A5%E9%81%93%E4%B8%BA%E5%95%A5%E8%84%9A%E6%9C%AC%E9%87%8C%E7%9A%84remoteip%E8%A6%81%E6%8D%A2%E6%88%90%E5%AF%B9%E5%BA%94%E7%9A%84%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8ip%E5%9C%B0%E5%9D%80">注意：这里第一条<code>set GOROOT=c:\Go</code>不加的话，编译出来的会是<code>exe</code>的，不知道为啥<br>
+脚本里的remoteip要换成对应的远程服务器ip地址</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/docker-bu-shu-mysql/">
+              <h3 class="post-title">
+                Docker部署mysql
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

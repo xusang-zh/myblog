@@ -1,0 +1,297 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>如何在debian系统中安装python3.8.3，以及创建虚拟环境 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="如何在debian系统中安装python3.8.3，以及创建虚拟环境 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境，可以通过以下步骤完成。
+步骤 1: 更新包列表
+首先，更新你的包列表以确保你有最新的可用软件包信息。
+sudo apt update
+
+步骤 2: 安装依赖项
+安装编译..." />
+    <meta name="keywords" content="linux,python" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              如何在debian系统中安装python3.8.3，以及创建虚拟环境
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/_frSDiGVYmV/" class="post-tag">
+                  # python
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境，可以通过以下步骤完成。</p>
+<h3 id="步骤-1-更新包列表">步骤 1: 更新包列表</h3>
+<p>首先，更新你的包列表以确保你有最新的可用软件包信息。</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+<h3 id="步骤-2-安装依赖项">步骤 2: 安装依赖项</h3>
+<p>安装编译 Python 所需的依赖项。</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+<h3 id="步骤-3-下载-python-383-源码">步骤 3: 下载 Python 3.8.3 源码</h3>
+<p>从 Python 官方网站下载 Python 3.8.3 的源码。</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-4-解压源码文件">步骤 4: 解压源码文件</h3>
+<p>解压下载的源码文件。</p>
+<pre><code class="language-sh">tar -xf Python-3.8.3.tgz
+</code></pre>
+<h3 id="步骤-5-编译和安装-python-383">步骤 5: 编译和安装 Python 3.8.3</h3>
+<p>进入解压后的目录，并配置、编译和安装 Python。</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+<p>使用 <code>make altinstall</code> 而不是 <code>make install</code> 以避免覆盖系统默认的 Python 版本。</p>
+<h3 id="步骤-6-验证安装">步骤 6: 验证安装</h3>
+<p>检查 Python 3.8.3 是否安装成功。</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+<p>应该会看到类似以下的输出：</p>
+<pre><code>Python 3.8.3
+</code></pre>
+<h3 id="步骤-7-安装-virtualenv">步骤 7: 安装 <code>virtualenv</code></h3>
+<p>安装 <code>virtualenv</code> 以便创建虚拟环境。</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+<h3 id="步骤-8-创建虚拟环境">步骤 8: 创建虚拟环境</h3>
+<p>创建一个新的虚拟环境。假设你要在 <code>~/myproject</code> 目录中创建一个虚拟环境。</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+</code></pre>
+<h3 id="步骤-9-激活虚拟环境">步骤 9: 激活虚拟环境</h3>
+<p>激活虚拟环境以开始使用它。</p>
+<pre><code class="language-sh">source ~/myproject/venv/bin/activate
+</code></pre>
+<p>你应该会看到你的 shell 提示符发生变化，显示虚拟环境的名称，这表示虚拟环境已激活。</p>
+<h3 id="步骤-10-安装所需的包">步骤 10: 安装所需的包</h3>
+<p>在虚拟环境中安装你需要的 Python 包。你可以使用 <code>pip</code> 来安装包，例如：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<ol>
+<li>
+<p>更新包列表：</p>
+<pre><code class="language-sh">sudo apt update
+</code></pre>
+</li>
+<li>
+<p>安装依赖项：</p>
+<pre><code class="language-sh">sudo apt install -y build-essential libssl-dev libffi-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev
+</code></pre>
+</li>
+<li>
+<p>下载和解压 Python 3.8.3 源码：</p>
+<pre><code class="language-sh">wget https://www.python.org/ftp/python/3.8.3/Python-3.8.3.tgz
+tar -xf Python-3.8.3.tgz
+</code></pre>
+</li>
+<li>
+<p>编译和安装 Python 3.8.3：</p>
+<pre><code class="language-sh">cd Python-3.8.3
+./configure --enable-optimizations
+make -j $(nproc)
+sudo make altinstall
+</code></pre>
+</li>
+<li>
+<p>验证安装：</p>
+<pre><code class="language-sh">python3.8 --version
+</code></pre>
+</li>
+<li>
+<p>安装 <code>virtualenv</code>：</p>
+<pre><code class="language-sh">sudo apt install -y python3-venv
+</code></pre>
+</li>
+<li>
+<p>创建并激活虚拟环境：</p>
+<pre><code class="language-sh">python3.8 -m venv ~/myproject/venv
+source ~/myproject/venv/bin/activate
+</code></pre>
+</li>
+<li>
+<p>在虚拟环境中安装包：</p>
+<pre><code class="language-sh">pip install requests
+</code></pre>
+</li>
+</ol>
+<p>通过这些步骤，你就可以在 Debian 系统中安装 Python 3.8.3 并创建虚拟环境了。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E6%AD%A5%E9%AA%A4-1-%E6%9B%B4%E6%96%B0%E5%8C%85%E5%88%97%E8%A1%A8">步骤 1: 更新包列表</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-2-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E9%A1%B9">步骤 2: 安装依赖项</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-3-%E4%B8%8B%E8%BD%BD-python-383-%E6%BA%90%E7%A0%81">步骤 3: 下载 Python 3.8.3 源码</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-4-%E8%A7%A3%E5%8E%8B%E6%BA%90%E7%A0%81%E6%96%87%E4%BB%B6">步骤 4: 解压源码文件</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-5-%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85-python-383">步骤 5: 编译和安装 Python 3.8.3</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-6-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85">步骤 6: 验证安装</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-7-%E5%AE%89%E8%A3%85-virtualenv">步骤 7: 安装 <code>virtualenv</code></a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-8-%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83">步骤 8: 创建虚拟环境</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-9-%E6%BF%80%E6%B4%BB%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83">步骤 9: 激活虚拟环境</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-10-%E5%AE%89%E8%A3%85%E6%89%80%E9%9C%80%E7%9A%84%E5%8C%85">步骤 10: 安装所需的包</a></li>
+<li><a href="#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B">完整示例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/jiang-docker-rong-qi-bao-cun-wei-jing-xiang-bing-shang-chuan-dao-docker-hub/">
+              <h3 class="post-title">
+                将 Docker 容器保存为镜像并上传到 Docker Hub
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

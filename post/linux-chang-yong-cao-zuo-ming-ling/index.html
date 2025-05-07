@@ -1,0 +1,248 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>linux 常用操作命令 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="linux 常用操作命令 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="
+
+
+功能描述
+命令
+
+
+
+
+查看进程指定
+```ps aux
+
+
+查看所有进程
+ps -A
+
+
+根据正则表达式过滤开头
+ps aux | grep -E '\./'
+
+
+通过pid查看占用端口
+netstat -nap | grep 进程..." />
+    <meta name="keywords" content="linux" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              linux 常用操作命令
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                1 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <table>
+<thead>
+<tr>
+<th>功能描述</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查看进程指定</td>
+<td>```ps aux</td>
+</tr>
+<tr>
+<td>查看所有进程</td>
+<td><code>ps -A</code></td>
+</tr>
+<tr>
+<td>根据正则表达式过滤开头</td>
+<td><code>ps aux | grep -E '\./'</code></td>
+</tr>
+<tr>
+<td>通过pid查看占用端口</td>
+<td><code>netstat -nap | grep 进程pid</code></td>
+</tr>
+<tr>
+<td>通过端口号查看占用端口</td>
+<td><code>netstat -nap | grep 端口号</code></td>
+</tr>
+<tr>
+<td>启动svn服务</td>
+<td><code>svnserve -d -r /home/svnrepos/</code></td>
+</tr>
+<tr>
+<td>创建svn仓库</td>
+<td><code>svnadmin create 仓库名</code></td>
+</tr>
+<tr>
+<td>启动redis</td>
+<td><code>./redis-server ../redis.conf</code></td>
+</tr>
+<tr>
+<td>设置后台启动redis</td>
+<td><code>将redis.conf中daemonize设置为yes,确保守护进程开启</code></td>
+</tr>
+<tr>
+<td>后台启动django独立脚本</td>
+<td><code>nohup python manage.py shell &lt; barragews/views/index.py &amp;</code></td>
+</tr>
+<tr>
+<td>后台启动并输出到日志</td>
+<td><code>nohup ./projname &gt; projname.log 2&gt;&amp;1 &amp;</code></td>
+</tr>
+<tr>
+<td>杀死指定进程</td>
+<td><code>kill -9 pid</code></td>
+</tr>
+</tbody>
+</table>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/maya-chang-yong-cao-zuo-ji-kuai-jie-jian/">
+              <h3 class="post-title">
+                Maya常用操作及快捷键
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>git常用命令 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="git常用命令 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="1. 查看修改的文件状态
+git status                # 查看工作区状态
+git diff                  # 查看具体修改内容
+
+2. 添加修改的文件到暂存区
+git add .         ..." />
+    <meta name="keywords" content="程序相关,git" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              git常用命令
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-12-05
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/fIKrGjtu_Lj/" class="post-tag">
+                  # git
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="1-查看修改的文件状态">1. 查看修改的文件状态</h1>
+<pre><code class="language-bash">git status                # 查看工作区状态
+git diff                  # 查看具体修改内容
+</code></pre>
+<h1 id="2-添加修改的文件到暂存区">2. 添加修改的文件到暂存区</h1>
+<pre><code class="language-bash">git add .                 # 添加所有修改
+git add filename         # 添加特定文件
+git add folder/*         # 添加特定文件夹下所有文件
+</code></pre>
+<h1 id="3-提交修改">3. 提交修改</h1>
+<pre><code class="language-bash">git commit -m &quot;提交说明&quot;   # 提交并添加说明
+git commit -am &quot;提交说明&quot;  # 合并 add 和 commit 操作（仅适用于已跟踪的文件）
+</code></pre>
+<h1 id="4-推送到远程仓库">4. 推送到远程仓库</h1>
+<pre><code class="language-bash">git push                  # 推送到默认远程分支
+git push origin master    # 推送到 master 分支
+git push origin dev       # 推送到 dev 分支
+git push -u origin branch_name  # 设置上游分支并推送
+</code></pre>
+<h1 id="5其他常用命令">5.其他常用命令</h1>
+<h3 id="拉取远程更新">拉取远程更新</h3>
+<pre><code class="language-bash">git pull                  # 拉取并合并远程更新
+</code></pre>
+<h3 id="查看提交历史">查看提交历史</h3>
+<pre><code class="language-bash">git log                   # 查看提交历史
+git log --oneline        # 简洁模式查看提交历史
+</code></pre>
+<h3 id="分支操作">分支操作</h3>
+<pre><code class="language-bash">git branch               # 查看本地分支
+git branch -r            # 查看远程分支
+git checkout branch_name # 切换分支
+git checkout -b new_branch  # 创建并切换到新分支
+</code></pre>
+<h3 id="撤销操作">撤销操作</h3>
+<pre><code class="language-bash">git reset HEAD filename   # 撤销暂存区的修改
+git checkout -- filename  # 撤销工作区的修改
+</code></pre>
+<h3 id="push之后回退版本">push之后回退版本</h3>
+<ul>
+<li>查看push日志<br>
+命令：<code>git log</code></li>
+</ul>
+<p>最新提交的在最上面，按下Enter加载更多，按下q退出浏览log</p>
+<pre><code class="language-bash">$ git log
+commit 9e13f036297b34c6908284c68e7d21a46b2460e3 (HEAD -&gt; master, origin/master, origin/HEAD)
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Wed Mar 12 17:02:21 2025 +0800
+
+    添加目录
+
+commit 0281d37c9a84b5d2375cab0f3e86eafb6337e0b8
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Wed Mar 12 16:54:52 2025 +0800
+
+    删除无效脚本
+    新增linux构建脚本
+
+commit 47c4723b3d378b0c2ca4e4ef9a8f8b3c199dc162
+Author: J9Q2MHJ\sunny &lt;111@163.com&gt;
+Date:   Thu Dec 5 16:20:59 2024 +0800
+
+    init
+
+commit 431ee068d3b8501bb7f3ea5e5e000e2f90309d44
+Author: bagedan &lt;x6775813@163.com&gt;
+Date:   Thu Dec 5 15:51:23 2024 +0800
+
+</code></pre>
+<ul>
+<li>
+<p>本地强制到目标版本<br>
+命令:git reset --hard 回退的版本号（就是log中commit后面的编码）<br>
+例：<code>git reset --hard 0281d37c9a84b5d2375cab0f3e86eafb6337e0b8</code></p>
+</li>
+<li>
+<p>将本地的head指针指向，强制提交推送到远程，实现回退版本<br>
+命令:git push -f origin master</p>
+</li>
+</ul>
+<h3 id="克隆命令">克隆命令</h3>
+<ul>
+<li>基本克隆命令</li>
+</ul>
+<pre><code class="language-bash">git clone https://github.com/username/repository.git .
+# 这里注意最后如果跟了一个&quot;.&quot; 则会降仓库的内容克隆到当前目录，如果没有跟，则会将仓库带目录一起克隆到当前目录
+</code></pre>
+<ul>
+<li>
+<p>克隆到指定目录<br>
+<code>git clone repository_url target_directory</code></p>
+</li>
+<li>
+<p>使用SSH地址克隆<br>
+<code>git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>指定SSH密钥克隆<br>
+<code>GIT_SSH_COMMAND='ssh -i ~/.ssh/id_ed25519' git clone git@github.com:username/repository.git</code></p>
+</li>
+<li>
+<p>克隆指定分支<br>
+<code>git clone -b branch_name repository_url</code></p>
+</li>
+<li>
+<p>克隆特定分支并且只克隆最新的提交<br>
+<code>git clone -b branch_name --single-branch --depth 1 repository_url</code></p>
+</li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#1-%E6%9F%A5%E7%9C%8B%E4%BF%AE%E6%94%B9%E7%9A%84%E6%96%87%E4%BB%B6%E7%8A%B6%E6%80%81">1. 查看修改的文件状态</a></li>
+<li><a href="#2-%E6%B7%BB%E5%8A%A0%E4%BF%AE%E6%94%B9%E7%9A%84%E6%96%87%E4%BB%B6%E5%88%B0%E6%9A%82%E5%AD%98%E5%8C%BA">2. 添加修改的文件到暂存区</a></li>
+<li><a href="#3-%E6%8F%90%E4%BA%A4%E4%BF%AE%E6%94%B9">3. 提交修改</a></li>
+<li><a href="#4-%E6%8E%A8%E9%80%81%E5%88%B0%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93">4. 推送到远程仓库</a></li>
+<li><a href="#5%E5%85%B6%E4%BB%96%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4">5.其他常用命令</a><br>
+*
+<ul>
+<li><a href="#%E6%8B%89%E5%8F%96%E8%BF%9C%E7%A8%8B%E6%9B%B4%E6%96%B0">拉取远程更新</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B%E6%8F%90%E4%BA%A4%E5%8E%86%E5%8F%B2">查看提交历史</a></li>
+<li><a href="#%E5%88%86%E6%94%AF%E6%93%8D%E4%BD%9C">分支操作</a></li>
+<li><a href="#%E6%92%A4%E9%94%80%E6%93%8D%E4%BD%9C">撤销操作</a></li>
+<li><a href="#push%E4%B9%8B%E5%90%8E%E5%9B%9E%E9%80%80%E7%89%88%E6%9C%AC">push之后回退版本</a></li>
+<li><a href="#%E5%85%8B%E9%9A%86%E5%91%BD%E4%BB%A4">克隆命令</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/chrome-cha-jian-zhua-qu-wang-ye-zi-yuan-andyuan-ma/">
+              <h3 class="post-title">
+                Chrome插件，抓取网页资源&amp;源码
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

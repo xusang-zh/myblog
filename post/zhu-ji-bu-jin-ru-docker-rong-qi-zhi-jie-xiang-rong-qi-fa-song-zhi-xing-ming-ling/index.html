@@ -1,0 +1,340 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>主机不进入docker容器，直接向容器发送执行命令 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="主机不进入docker容器，直接向容器发送执行命令 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在宿主机上不进入 Docker 容器，但直接向容器发送并执行命令，可以使用 docker exec 命令。以下是几种常见的方法：
+
+1. 使用 docker exec 执行单条命令
+docker exec [容器名或ID] [命令]
+
+示例..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              主机不进入docker容器，直接向容器发送执行命令
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-04-02
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在宿主机上不进入 Docker 容器，但直接向容器发送并执行命令，可以使用 <code>docker exec</code> 命令。以下是几种常见的方法：</p>
+<hr>
+<h2 id="1-使用-docker-exec-执行单条命令"><strong>1. 使用 <code>docker exec</code> 执行单条命令</strong></h2>
+<pre><code class="language-bash">docker exec [容器名或ID] [命令]
+</code></pre>
+<h3 id="示例"><strong>示例</strong></h3>
+<ul>
+<li>在容器内执行 <code>ls /</code>：<pre><code class="language-bash">docker exec my_container ls /
+</code></pre>
+</li>
+<li>在容器内执行 <code>echo</code>：<pre><code class="language-bash">docker exec my_container echo &quot;Hello from Host!&quot;
+</code></pre>
+</li>
+<li>在容器内运行交互式 Bash（类似 <code>docker exec -it</code>）：<pre><code class="language-bash">docker exec -it my_container /bin/bash
+</code></pre>
+</li>
+</ul>
+<h3 id="常用参数"><strong>常用参数</strong></h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code> (<code>--interactive</code>)</td>
+<td>保持 STDIN 打开（允许输入）</td>
+</tr>
+<tr>
+<td><code>-t</code> (<code>--tty</code>)</td>
+<td>分配伪终端（用于交互式 shell）</td>
+</tr>
+<tr>
+<td><code>-u</code> (<code>--user</code>)</td>
+<td>指定执行命令的用户（如 <code>-u root</code>）</td>
+</tr>
+<tr>
+<td><code>-e</code> (<code>--env</code>)</td>
+<td>设置环境变量（如 <code>-e VAR=value</code>）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-在后台运行长期命令不占用终端"><strong>2. 在后台运行长期命令（不占用终端）</strong></h2>
+<p>如果要在容器内运行一个长期任务（如启动服务），可以加 <code>-d</code>（<code>--detach</code>）：</p>
+<pre><code class="language-bash">docker exec -d my_container tail -f /var/log/syslog
+</code></pre>
+<hr>
+<h2 id="3-执行多条命令通过-sh-c"><strong>3. 执行多条命令（通过 <code>sh -c</code>）</strong></h2>
+<p>如果要在容器内运行多个命令，可以使用 <code>sh -c</code>：</p>
+<pre><code class="language-bash">docker exec my_container sh -c &quot;cd /tmp &amp;&amp; echo 'test' &gt; test.txt&quot;
+</code></pre>
+<hr>
+<h2 id="4-从宿主机传递变量或文件"><strong>4. 从宿主机传递变量或文件</strong></h2>
+<h3 id="1-传递环境变量"><strong>(1) 传递环境变量</strong></h3>
+<pre><code class="language-bash">docker exec -e MY_VAR=&quot;Hello&quot; my_container env | grep MY_VAR
+</code></pre>
+<h3 id="2-从宿主机复制文件到容器"><strong>(2) 从宿主机复制文件到容器</strong></h3>
+<pre><code class="language-bash">docker cp /host/path/file.txt my_container:/container/path/
+</code></pre>
+<h3 id="3-从容器复制文件到宿主机"><strong>(3) 从容器复制文件到宿主机</strong></h3>
+<pre><code class="language-bash">docker cp my_container:/container/path/file.txt /host/path/
+</code></pre>
+<hr>
+<h2 id="5-批量向多个容器发送命令"><strong>5. 批量向多个容器发送命令</strong></h2>
+<p>如果要向多个容器发送相同的命令，可以结合 <code>docker ps</code> 和 <code>xargs</code>：</p>
+<pre><code class="language-bash">docker ps -q | xargs -I {} docker exec {} echo &quot;Hello, Container {}!&quot;
+</code></pre>
+<ul>
+<li><code>docker ps -q</code> 列出所有运行中的容器 ID</li>
+<li><code>xargs -I {}</code> 对每个容器执行命令</li>
+</ul>
+<hr>
+<h2 id="6-在容器内执行脚本"><strong>6. 在容器内执行脚本</strong></h2>
+<p>如果有一个脚本要在容器内运行，可以：</p>
+<h3 id="1-直接传入脚本内容"><strong>(1) 直接传入脚本内容</strong></h3>
+<pre><code class="language-bash">docker exec my_container sh -c &quot;$(cat host_script.sh)&quot;
+</code></pre>
+<h3 id="2-先复制脚本再执行"><strong>(2) 先复制脚本再执行</strong></h3>
+<pre><code class="language-bash">docker cp host_script.sh my_container:/tmp/
+docker exec my_container sh /tmp/host_script.sh
+</code></pre>
+<hr>
+<h2 id="7-特殊情况处理"><strong>7. 特殊情况处理</strong></h2>
+<h3 id="1-容器没有-binbash-或-binsh"><strong>(1) 容器没有 <code>/bin/bash</code> 或 <code>/bin/sh</code></strong></h3>
+<p>如果容器是极简镜像（如 <code>scratch</code> 或 <code>alpine</code> 不带 <code>bash</code>），可以尝试直接执行二进制文件：</p>
+<pre><code class="language-bash">docker exec my_container /path/to/binary
+</code></pre>
+<h3 id="2-容器没有运行"><strong>(2) 容器没有运行</strong></h3>
+<p>如果容器未启动，必须先启动它：</p>
+<pre><code class="language-bash">docker start my_container
+docker exec my_container echo &quot;Now it's running!&quot;
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>需求</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>执行单条命令</strong></td>
+<td><code>docker exec my_container ls /</code></td>
+</tr>
+<tr>
+<td><strong>进入交互式终端</strong></td>
+<td><code>docker exec -it my_container /bin/bash</code></td>
+</tr>
+<tr>
+<td><strong>后台运行命令</strong></td>
+<td><code>docker exec -d my_container tail -f /var/log/syslog</code></td>
+</tr>
+<tr>
+<td><strong>执行多条命令</strong></td>
+<td><code>docker exec my_container sh -c &quot;cmd1 &amp;&amp; cmd2&quot;</code></td>
+</tr>
+<tr>
+<td><strong>传递环境变量</strong></td>
+<td><code>docker exec -e VAR=value my_container env</code></td>
+</tr>
+<tr>
+<td><strong>复制文件</strong></td>
+<td><code>docker cp file.txt my_container:/path/</code></td>
+</tr>
+<tr>
+<td><strong>批量执行</strong></td>
+<td><code>docker ps -q | xargs -I {} docker exec {} echo &quot;Hello&quot;</code></td>
+</tr>
+</tbody>
+</table>
+<p>如果遇到权限问题（如 <code>Permission denied</code>），可以尝试 <code>-u root</code> 以 root 身份执行。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1-%E4%BD%BF%E7%94%A8-docker-exec-%E6%89%A7%E8%A1%8C%E5%8D%95%E6%9D%A1%E5%91%BD%E4%BB%A4"><strong>1. 使用 <code>docker exec</code> 执行单条命令</strong></a>
+<ul>
+<li><a href="#%E7%A4%BA%E4%BE%8B"><strong>示例</strong></a></li>
+<li><a href="#%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><strong>常用参数</strong></a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%9C%A8%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%E9%95%BF%E6%9C%9F%E5%91%BD%E4%BB%A4%E4%B8%8D%E5%8D%A0%E7%94%A8%E7%BB%88%E7%AB%AF"><strong>2. 在后台运行长期命令（不占用终端）</strong></a></li>
+<li><a href="#3-%E6%89%A7%E8%A1%8C%E5%A4%9A%E6%9D%A1%E5%91%BD%E4%BB%A4%E9%80%9A%E8%BF%87-sh-c"><strong>3. 执行多条命令（通过 <code>sh -c</code>）</strong></a></li>
+<li><a href="#4-%E4%BB%8E%E5%AE%BF%E4%B8%BB%E6%9C%BA%E4%BC%A0%E9%80%92%E5%8F%98%E9%87%8F%E6%88%96%E6%96%87%E4%BB%B6"><strong>4. 从宿主机传递变量或文件</strong></a>
+<ul>
+<li><a href="#1-%E4%BC%A0%E9%80%92%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><strong>(1) 传递环境变量</strong></a></li>
+<li><a href="#2-%E4%BB%8E%E5%AE%BF%E4%B8%BB%E6%9C%BA%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6%E5%88%B0%E5%AE%B9%E5%99%A8"><strong>(2) 从宿主机复制文件到容器</strong></a></li>
+<li><a href="#3-%E4%BB%8E%E5%AE%B9%E5%99%A8%E5%A4%8D%E5%88%B6%E6%96%87%E4%BB%B6%E5%88%B0%E5%AE%BF%E4%B8%BB%E6%9C%BA"><strong>(3) 从容器复制文件到宿主机</strong></a></li>
+</ul>
+</li>
+<li><a href="#5-%E6%89%B9%E9%87%8F%E5%90%91%E5%A4%9A%E4%B8%AA%E5%AE%B9%E5%99%A8%E5%8F%91%E9%80%81%E5%91%BD%E4%BB%A4"><strong>5. 批量向多个容器发送命令</strong></a></li>
+<li><a href="#6-%E5%9C%A8%E5%AE%B9%E5%99%A8%E5%86%85%E6%89%A7%E8%A1%8C%E8%84%9A%E6%9C%AC"><strong>6. 在容器内执行脚本</strong></a>
+<ul>
+<li><a href="#1-%E7%9B%B4%E6%8E%A5%E4%BC%A0%E5%85%A5%E8%84%9A%E6%9C%AC%E5%86%85%E5%AE%B9"><strong>(1) 直接传入脚本内容</strong></a></li>
+<li><a href="#2-%E5%85%88%E5%A4%8D%E5%88%B6%E8%84%9A%E6%9C%AC%E5%86%8D%E6%89%A7%E8%A1%8C"><strong>(2) 先复制脚本再执行</strong></a></li>
+</ul>
+</li>
+<li><a href="#7-%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5%E5%A4%84%E7%90%86"><strong>7. 特殊情况处理</strong></a>
+<ul>
+<li><a href="#1-%E5%AE%B9%E5%99%A8%E6%B2%A1%E6%9C%89-binbash-%E6%88%96-binsh"><strong>(1) 容器没有 <code>/bin/bash</code> 或 <code>/bin/sh</code></strong></a></li>
+<li><a href="#2-%E5%AE%B9%E5%99%A8%E6%B2%A1%E6%9C%89%E8%BF%90%E8%A1%8C"><strong>(2) 容器没有运行</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93"><strong>总结</strong></a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-python38/">
+              <h3 class="post-title">
+                linux系统（ubuntu）docker容器安装python3.8
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

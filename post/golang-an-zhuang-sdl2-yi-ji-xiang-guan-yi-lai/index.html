@@ -1,0 +1,184 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Golang 安装sdl2以及相关依赖 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Golang 安装sdl2以及相关依赖 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在windows下安装，首先需要安装Mingw，Minimalist GNU on Windows 的缩写。它实际上是将经典的开源 C语言 编译器 GCC 移植到了 Windows 下，并且包含了 Win32API ，因此可以将源代码编译生..." />
+    <meta name="keywords" content="Go" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Golang 安装sdl2以及相关依赖
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mV40mMrAwiL/" class="post-tag">
+                  # Go
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在windows下安装，首先需要安装<code>Mingw</code>，Minimalist GNU on Windows 的缩写。它实际上是将经典的开源 C语言 编译器 GCC 移植到了 Windows 下，并且包含了 Win32API ，因此可以将源代码编译生成 Windows 下的可执行程序。<br>
+下载地址：<a href="https://www.mingw-w64.org/downloads/">https://www.mingw-w64.org/downloads/</a><br>
+1.找到<code>MingW-W64-builds</code>，点击跳转<br>
+<img src="/media/avatar/download_mingw.png" alt="avatar" loading="lazy"><br>
+2.如果是直接安装版本，则点击<code>Installation: Sourceforge</code>跳转下载.exe文件，但是我这里安装的时候报错了。所以就得下载离线版本<br>
+<img src="/media/avatar/download_mingw2.png" alt="avatar" loading="lazy"><br>
+3.点击Sources 下的<code>SourceForge</code>链接<br>
+4.进入后，拉到最下面，这里应该可以自己选吧，我下载了<code>x86_64-posix-seh</code>，下载完后直接解压到你自己目录即可<br>
+<img src="/media/avatar/download_mingw3.png" alt="avatar" loading="lazy"><br>
+5.配置环境变量，需要设置两个环境变量：<code>H:\Program Files\mingw64\bin;  H:\Program Files\mingw64\x86_64-w64-mingw32\bin</code><br>
+6.下载SDL2相关依赖库，SDL2开发库下载地址：<a href="http://libsdl.org/download-2.0.php">http://libsdl.org/download-2.0.php</a><br>
+<img src="/media/avatar/download_sdl2.png" alt="avatar" loading="lazy"><br>
+7.然后把下图目录下的文件全都直接复制到<code>H:\Program Files\mingw64\x86_64-w64-mingw32</code>目录下，如果要下载sdl2_image、sdl2_mixer、sdl2_ttf、sdl2_gfx的话也是同样的方法重复第6和7步<br>
+<img src="/media/avatar/download_sdl2_2.png" alt="avatar" loading="lazy"><br>
+8.下载SDL2的golang三方库，使用命令：<code>go get github.com/veandco/go-sdl2</code><br>
+9.到这里就可以正常使用golang基于SLD2的gui开发了</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/django-zhong-valueshe-value_listde-qu-bie/">
+              <h3 class="post-title">
+                django中values()和value_list()的区别
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

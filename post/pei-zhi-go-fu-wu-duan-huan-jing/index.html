@@ -1,0 +1,337 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>配置go服务端环境，docker容器中 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="配置go服务端环境，docker容器中 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="一、拉取基础镜像
+先从docker上拉去ubuntu:22.04
+docker pull ubuntu:22.04
+
+启动ubuntu
+docker run -it --name gosvr
+
+此时进入到ubuntu内，也可以后续手动进入
+..." />
+    <meta name="keywords" content="程序相关,Go,docker,linux" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              配置go服务端环境，docker容器中
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-04-01
+              </span>
+              <span>
+                4 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mV40mMrAwiL/" class="post-tag">
+                  # Go
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="一-拉取基础镜像">一、拉取基础镜像</h1>
+<p>先从docker上拉去ubuntu:22.04</p>
+<pre><code class="language-shell">docker pull ubuntu:22.04
+</code></pre>
+<p>启动ubuntu</p>
+<pre><code class="language-shell">docker run -it --name gosvr
+</code></pre>
+<p>此时进入到ubuntu内，也可以后续手动进入</p>
+<pre><code class="language-shell">docker exec -it gosvr /bin/bash
+</code></pre>
+<h1 id="二-修改时区">二、修改时区</h1>
+<p>要修改一下时区，时区数据通常位于 /usr/share/zoneinfo/。先检查是否存在目标时区（如 Asia/Shanghai）：</p>
+<pre><code class="language-shell">ls /usr/share/zoneinfo/Asia/Shanghai
+</code></pre>
+<p>如果目录不存在，则需要安装时区数据包：</p>
+<pre><code class="language-shell">apt update &amp;&amp; apt install tzdata
+</code></pre>
+<p>手动覆盖时区配置</p>
+<pre><code class="language-shell">ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+</code></pre>
+<p>验证，运行date查看时区是否已经更新</p>
+<pre><code class="language-shell">date
+</code></pre>
+<h1 id="三-安装相关工具">三、安装相关工具</h1>
+<pre><code class="language-shell">apt-get update &amp;&amp; apt-get install net-tools
+apt-get install vim
+</code></pre>
+<h1 id="四-安装相关环境">四、安装相关环境</h1>
+<p>安装相关环境</p>
+<ul>
+<li>mysql (mysql可以部署在另一个容器，从docker上拉去对应版本)</li>
+<li>redis --&gt;<a href="/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-redis/">详细步骤</a></li>
+<li>memcached --&gt;<a href="/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-memcached/">详细步骤</a></li>
+<li>python 3.8.x --&gt;<a href="/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-python38/">详细步骤</a></li>
+<li>go 1.18</li>
+</ul>
+<h3 id="-golang-"><strong>《----------------Golang----------------》</strong></h3>
+<p>使用gpt直接安装</p>
+<pre><code class="language-shell">apt-get update
+apt-get list golang #查看apt自带的go版本，需要安装1.18
+apt-get install golang #直接安装
+</code></pre>
+<h3 id="-redis-"><strong>《----------------Redis----------------》</strong></h3>
+<h4 id="1-更新软件包列表并安装-redis"><strong>1. 更新软件包列表并安装 Redis</strong></h4>
+<pre><code class="language-bash">sudo apt update
+sudo apt install redis-server -y
+</code></pre>
+<h4 id="2-检查-redis-是否已启动"><strong>2. 检查 Redis 是否已启动</strong></h4>
+<p>安装完成后，Redis 通常会自动启动。检查 Redis 状态：</p>
+<pre><code class="language-bash">sudo service redis-server status
+</code></pre>
+<p>如果没有启动，手动启动：</p>
+<pre><code class="language-bash">sudo service redis-server start
+</code></pre>
+<h4 id="3-验证-redis-是否正常工作"><strong>3. 验证 Redis 是否正常工作</strong></h4>
+<pre><code class="language-bash">redis-cli ping
+</code></pre>
+<p>如果返回 <code>PONG</code>，说明 Redis 正常运行。</p>
+<h4 id="4-可选配置-redis"><strong>4. （可选）配置 Redis</strong></h4>
+<p>如果需要修改 Redis 配置（如绑定 IP、设置密码等）：</p>
+<pre><code class="language-bash">vim /etc/redis/redis.conf
+</code></pre>
+<p>修改后重启 Redis：</p>
+<pre><code class="language-bash">sudo service redis-server restart
+</code></pre>
+<h3 id="-memacahed-"><strong>《----------------Memacahed----------------》</strong></h3>
+<h4 id="1-安装-memcached"><strong>1. 安装 Memcached</strong></h4>
+<pre><code class="language-bash">sudo apt update
+sudo apt install memcached -y
+</code></pre>
+<h4 id="2-启动-memcached"><strong>2. 启动 Memcached</strong></h4>
+<pre><code class="language-bash">sudo service memcached start
+</code></pre>
+<h4 id="检查运行状态"><strong>检查运行状态</strong></h4>
+<pre><code class="language-bash">sudo service memcached status
+</code></pre>
+<p>如果看到 <code>memcached</code> 进程，说明服务已启动。</p>
+<h4 id="3-可选配置-memcached"><strong>3. （可选）配置 Memcached</strong></h4>
+<p>默认配置文件位置：</p>
+<ul>
+<li><strong>Debian/Ubuntu</strong>: <code>/etc/memcached.conf</code><br>
+修改memcached.conf中 -l 127.0.0.1改为0.0.0.0<br>
+修改后重启：</li>
+</ul>
+<pre><code class="language-bash">sudo service memcached restart
+</code></pre>
+<h3 id="-python38-"><strong>《----------------Python3.8----------------》</strong></h3>
+<h4 id="从源代码编译安装"><strong>从源代码编译安装</strong></h4>
+<p>适用于所有 Ubuntu 版本，但需要手动编译。</p>
+<h4 id="1-安装编译依赖"><strong>1. 安装编译依赖</strong></h4>
+<pre><code class="language-bash">sudo apt update
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+</code></pre>
+<h4 id="2-下载-python-38-源码"><strong>2. 下载 Python 3.8 源码</strong></h4>
+<pre><code class="language-bash">wget https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tar.xz
+tar -xf Python-3.8.18.tar.xz
+cd Python-3.8.18
+</code></pre>
+<h4 id="3-编译并安装"><strong>3. 编译并安装</strong></h4>
+<pre><code class="language-bash">./configure --enable-optimizations
+make -j $(nproc)  # 多核编译加快速度
+sudo make altinstall  # 避免覆盖系统默认 Python
+</code></pre>
+<h4 id="4-验证安装"><strong>4. 验证安装</strong></h4>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<p>输出：</p>
+<pre><code>Python 3.8.18
+</code></pre>
+<h4 id="5-设置软路由"><strong>5. 设置软路由</strong></h4>
+<p>ln -s /usr/local/bin/python3.8 /usr/local/bin/python3<br>
+设置软路由使得可以直接使用python3命令</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E6%8B%89%E5%8F%96%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F">一、拉取基础镜像</a></li>
+<li><a href="#%E4%BA%8C-%E4%BF%AE%E6%94%B9%E6%97%B6%E5%8C%BA">二、修改时区</a></li>
+<li><a href="#%E4%B8%89-%E5%AE%89%E8%A3%85%E7%9B%B8%E5%85%B3%E5%B7%A5%E5%85%B7">三、安装相关工具</a></li>
+<li><a href="#%E5%9B%9B-%E5%AE%89%E8%A3%85%E7%9B%B8%E5%85%B3%E7%8E%AF%E5%A2%83">四、安装相关环境</a><br>
+*
+<ul>
+<li><a href="#-golang-"><strong>《----------------Golang----------------》</strong></a></li>
+<li><a href="#-redis-"><strong>《----------------Redis----------------》</strong></a>
+<ul>
+<li><a href="#1-%E6%9B%B4%E6%96%B0%E8%BD%AF%E4%BB%B6%E5%8C%85%E5%88%97%E8%A1%A8%E5%B9%B6%E5%AE%89%E8%A3%85-redis"><strong>1. 更新软件包列表并安装 Redis</strong></a></li>
+<li><a href="#2-%E6%A3%80%E6%9F%A5-redis-%E6%98%AF%E5%90%A6%E5%B7%B2%E5%90%AF%E5%8A%A8"><strong>2. 检查 Redis 是否已启动</strong></a></li>
+<li><a href="#3-%E9%AA%8C%E8%AF%81-redis-%E6%98%AF%E5%90%A6%E6%AD%A3%E5%B8%B8%E5%B7%A5%E4%BD%9C"><strong>3. 验证 Redis 是否正常工作</strong></a></li>
+<li><a href="#4-%E5%8F%AF%E9%80%89%E9%85%8D%E7%BD%AE-redis"><strong>4. （可选）配置 Redis</strong></a></li>
+</ul>
+</li>
+<li><a href="#-memacahed-"><strong>《----------------Memacahed----------------》</strong></a>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85-memcached"><strong>1. 安装 Memcached</strong></a></li>
+<li><a href="#2-%E5%90%AF%E5%8A%A8-memcached"><strong>2. 启动 Memcached</strong></a></li>
+<li><a href="#%E6%A3%80%E6%9F%A5%E8%BF%90%E8%A1%8C%E7%8A%B6%E6%80%81"><strong>检查运行状态</strong></a></li>
+<li><a href="#3-%E5%8F%AF%E9%80%89%E9%85%8D%E7%BD%AE-memcached"><strong>3. （可选）配置 Memcached</strong></a></li>
+</ul>
+</li>
+<li><a href="#-python38-"><strong>《----------------Python3.8----------------》</strong></a>
+<ul>
+<li><a href="#%E4%BB%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><strong>从源代码编译安装</strong></a></li>
+<li><a href="#1-%E5%AE%89%E8%A3%85%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96"><strong>1. 安装编译依赖</strong></a></li>
+<li><a href="#2-%E4%B8%8B%E8%BD%BD-python-38-%E6%BA%90%E7%A0%81"><strong>2. 下载 Python 3.8 源码</strong></a></li>
+<li><a href="#3-%E7%BC%96%E8%AF%91%E5%B9%B6%E5%AE%89%E8%A3%85"><strong>3. 编译并安装</strong></a></li>
+<li><a href="#4-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><strong>4. 验证安装</strong></a></li>
+<li><a href="#5-%E8%AE%BE%E7%BD%AE%E8%BD%AF%E8%B7%AF%E7%94%B1"><strong>5. 设置软路由</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/docker-jiang-dockerhub-de-jing-xiang-chong-xin-da-biao-qian-tui-song-dao-guo-nei-jing-xiang-yuan-a-li-jing-xiang-yuan-yuan/">
+              <h3 class="post-title">
+                docker将dockerhub的镜像重新打标签推送到国内镜像源（阿里镜像源）源
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

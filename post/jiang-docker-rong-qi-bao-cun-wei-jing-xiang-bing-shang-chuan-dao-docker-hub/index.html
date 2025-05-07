@@ -1,0 +1,250 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>将 Docker 容器保存为镜像并上传到 Docker Hub | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="将 Docker 容器保存为镜像并上传到 Docker Hub | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="要将 Docker 容器保存为镜像并上传到 Docker Hub，你可以按照以下步骤操作：
+步骤 1: 提交容器为镜像
+假设你的容器名称或 ID 是 my_container，你可以使用 docker commit 命令将其保存为一个新的镜..." />
+    <meta name="keywords" content="docker" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              将 Docker 容器保存为镜像并上传到 Docker Hub
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>要将 Docker 容器保存为镜像并上传到 Docker Hub，你可以按照以下步骤操作：</p>
+<h3 id="步骤-1-提交容器为镜像">步骤 1: 提交容器为镜像</h3>
+<p>假设你的容器名称或 ID 是 <code>my_container</code>，你可以使用 <code>docker commit</code> 命令将其保存为一个新的镜像。以下是将容器保存为镜像的示例：</p>
+<pre><code class="language-sh">docker commit my_container my_username/my_image_name:tag
+</code></pre>
+<ul>
+<li><code>my_container</code>: 容器的名称或 ID。</li>
+<li><code>my_username/my_image_name:tag</code>: 创建的镜像名称和标签（<code>tag</code> 是可选的，默认是 <code>latest</code>）。</li>
+</ul>
+<h3 id="步骤-2-登录-docker-hub">步骤 2: 登录 Docker Hub</h3>
+<p>确保你已经在 Docker Hub 上有一个帐户。如果没有，请访问 <a href="https://hub.docker.com">Docker Hub</a> 注册一个帐户。</p>
+<p>然后，在命令行中登录到 Docker Hub：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+<p>系统会提示你输入 Docker Hub 的用户名和密码。</p>
+<h3 id="步骤-3-推送镜像到-docker-hub">步骤 3: 推送镜像到 Docker Hub</h3>
+<p>使用 <code>docker push</code> 命令将镜像上传到 Docker Hub。确保镜像名称和标签与之前 <code>docker commit</code> 创建的镜像一致。</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:tag
+</code></pre>
+<h3 id="完整示例">完整示例</h3>
+<p>假设你的 Docker Hub 用户名是 <code>my_username</code>，容器 ID 是 <code>abcd1234efgh</code>，并且你希望将其保存为镜像 <code>my_image_name</code> 并标记为 <code>v1</code>：</p>
+<ol>
+<li>
+<p><strong>提交容器为镜像</strong>：</p>
+<pre><code class="language-sh">docker commit abcd1234efgh my_username/my_image_name:v1
+</code></pre>
+</li>
+<li>
+<p><strong>登录 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker login
+</code></pre>
+</li>
+<li>
+<p><strong>推送镜像到 Docker Hub</strong>：</p>
+<pre><code class="language-sh">docker push my_username/my_image_name:v1
+</code></pre>
+</li>
+</ol>
+<h3 id="示例操作">示例操作</h3>
+<p>以下是完整操作的命令行输出示例：</p>
+<pre><code class="language-sh"># 提交容器为镜像
+docker commit abcd1234efgh my_username/my_image_name:v1
+# 成功返回的镜像 ID
+sha256:3b9ac9e09b8a9f9d9b4c1f6390a2c1e0b4c5a1e2f8e8f9b8b7a0e8c1b9a0e1c2
+
+# 登录 Docker Hub
+docker login
+# 提示输入用户名和密码
+Username: my_username
+Password:
+
+# 推送镜像到 Docker Hub
+docker push my_username/my_image_name:v1
+# 推送成功的输出
+The push refers to repository [docker.io/my_username/my_image_name]
+v1: digest: sha256:9b9c1e1a1b1c2d1e2f3e4g5h6i7j8k9l0m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5 size: 1234
+</code></pre>
+<h3 id="注意事项">注意事项</h3>
+<ol>
+<li><strong>命名规范</strong>：确保镜像名称遵循 Docker Hub 的命名规范，通常是 <code>username/repository:tag</code> 的格式。</li>
+<li><strong>权限</strong>：确保你的 Docker Hub 账户有权推送到指定的镜像库。</li>
+<li><strong>私有仓库</strong>：如果你的 Docker Hub 仓库是私有的，确保你的账户有相应的权限访问和推送。</li>
+</ol>
+<p>通过这些步骤，你可以将 Docker 容器保存为镜像并上传到 Docker Hub 的镜像库中。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E6%AD%A5%E9%AA%A4-1-%E6%8F%90%E4%BA%A4%E5%AE%B9%E5%99%A8%E4%B8%BA%E9%95%9C%E5%83%8F">步骤 1: 提交容器为镜像</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-2-%E7%99%BB%E5%BD%95-docker-hub">步骤 2: 登录 Docker Hub</a></li>
+<li><a href="#%E6%AD%A5%E9%AA%A4-3-%E6%8E%A8%E9%80%81%E9%95%9C%E5%83%8F%E5%88%B0-docker-hub">步骤 3: 推送镜像到 Docker Hub</a></li>
+<li><a href="#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B">完整示例</a></li>
+<li><a href="#%E7%A4%BA%E4%BE%8B%E6%93%8D%E4%BD%9C">示例操作</a></li>
+<li><a href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">注意事项</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/proxy_pool-de-dockerfile-wen-jian-nei-rong-jie-shi/">
+              <h3 class="post-title">
+                proxy_pool的Dockerfile文件内容解释
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

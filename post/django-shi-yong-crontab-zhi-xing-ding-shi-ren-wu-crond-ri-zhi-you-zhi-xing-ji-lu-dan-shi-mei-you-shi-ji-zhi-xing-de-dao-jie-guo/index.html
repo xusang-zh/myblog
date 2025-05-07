@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Django使用crontab执行定时任务，crond日志有执行记录，但是没有实际执行得到结果 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Django使用crontab执行定时任务，crond日志有执行记录，但是没有实际执行得到结果 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="crontab的命令如下：
+CRONJOBS = [
+    ('*/1 * * * *', 'dailyct.views.award_record', '&gt;&gt; /www/wwwroot/Dctproj/logs/lkpy/cr..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Django使用crontab执行定时任务，crond日志有执行记录，但是没有实际执行得到结果
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>crontab的命令如下：</p>
+<pre><code>CRONJOBS = [
+    ('*/1 * * * *', 'dailyct.views.award_record', '&gt;&gt; /www/wwwroot/Dctproj/logs/lkpy/crontab_award.log'),
+]
+</code></pre>
+<p>最终找到错误原因非常低级。。因为没有建立日志的路径目录。。太蠢了。</p>
+<p>不过在找错误的过程中，知道了如何找错误，在此记录一下，以免日后再犯。</p>
+<hr>
+<p>一、在虚拟环境中直接输入命令：<code>python3 manage.py run xxxxxxxxxx</code>（此处xxxxxx为add定时任务时，得到的一串任务码），发现可以执行，没有问题<br>
+二、查看crond的日志，发现crontab任务其实就是执行了一个命令：</p>
+<pre><code>(root) CMD (/www/wwwroot/Dctproj/venv/bin/python3 /www/wwwroot/Dctproj/lkpydct/manage.py crontab run 1d8c85d5dbf16fca86947ac6c71228b7 &gt;&gt; /www/wwwroot/Dctproj/logs/lkpy/crontab_award.log # django-cronjobs for lkpydct)
+</code></pre>
+<p>那么思考，是不是可以直接在终端敲这个命令，于是在终端输入命令：<code>/www/wwwroot/Dctproj/venv/bin/python3 /www/wwwroot/Dctproj/lkpydct/manage.py crontab run 1d8c85d5dbf16fca86947ac6c71228b7 &gt;&gt; /www/wwwroot/Dctproj/logs/lkpy/crontab_award.log # django-cronjobs for lkpydct</code><br>
+发现报错说没有日志目录，由此找到了crontab不执行的原因，加上对应目录之后，定时任务就正常执行了</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/shu-mei-pai-qi-dong-bao-cuo-panic-vfs-unable-to-mount-root-fs-on-unknown-block28/">
+              <h3 class="post-title">
+                树莓派启动报错：PANIC: VFS Unable to mount root fs on unknown-block(2,8)
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

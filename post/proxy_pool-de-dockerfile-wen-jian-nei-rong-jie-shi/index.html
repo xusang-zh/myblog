@@ -1,0 +1,270 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>proxy_pool的Dockerfile文件内容解释 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="proxy_pool的Dockerfile文件内容解释 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="FROM python:3.6-alpine
+MAINTAINER jhao104 j_hao104@163.com
+WORKDIR /app
+COPY ./requirements.txt .
+apk repository
+RUN sed..." />
+    <meta name="keywords" content="docker" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              proxy_pool的Dockerfile文件内容解释
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>FROM python:3.6-alpine</p>
+<p>MAINTAINER jhao104 <a href="mailto:j_hao104@163.com">j_hao104@163.com</a></p>
+<p>WORKDIR /app</p>
+<p>COPY ./requirements.txt .</p>
+<h1 id="apk-repository">apk repository</h1>
+<p>RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories</p>
+<h1 id="timezone">timezone</h1>
+<p>RUN apk add -U tzdata &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; apk del tzdata</p>
+<h1 id="runtime-environment">runtime environment</h1>
+<p>RUN apk add musl-dev gcc libxml2-dev libxslt-dev &amp;&amp; <br>
+pip install --no-cache-dir -r requirements.txt &amp;&amp; <br>
+apk del gcc musl-dev</p>
+<p>COPY . .</p>
+<p>EXPOSE 5010</p>
+<p>ENTRYPOINT [ &quot;sh&quot;, &quot;start.sh&quot; ]</p>
+<p>这个 Dockerfile 用于构建一个基于 Alpine Linux 的 Python 应用镜像，包含了一些必要的设置和依赖项安装。以下是每一行的详细解释：</p>
+<h3 id="基础镜像和维护者信息">基础镜像和维护者信息</h3>
+<pre><code class="language-dockerfile">FROM python:3.6-alpine
+</code></pre>
+<ul>
+<li>使用 Python 3.6 的 Alpine 版本作为基础镜像。Alpine Linux 是一个轻量级的 Linux 发行版，通常用于构建小型 Docker 镜像。</li>
+</ul>
+<pre><code class="language-dockerfile">MAINTAINER jhao104 &lt;j_hao104@163.com&gt;
+</code></pre>
+<ul>
+<li>定义镜像的维护者信息。这个字段可以包含维护者的名字和联系方式。</li>
+</ul>
+<h3 id="工作目录设置">工作目录设置</h3>
+<pre><code class="language-dockerfile">WORKDIR /app
+</code></pre>
+<ul>
+<li>设置工作目录为 <code>/app</code>。所有接下来的指令将会在这个目录中执行。</li>
+</ul>
+<h3 id="复制和安装依赖项">复制和安装依赖项</h3>
+<pre><code class="language-dockerfile">COPY ./requirements.txt .
+</code></pre>
+<ul>
+<li>将当前目录下的 <code>requirements.txt</code> 文件复制到容器的 <code>/app</code> 目录中。</li>
+</ul>
+<pre><code class="language-dockerfile"># apk repository
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+</code></pre>
+<ul>
+<li>替换 Alpine Linux 的软件仓库为中国科学技术大学的镜像，以加速软件包的下载速度。</li>
+</ul>
+<pre><code class="language-dockerfile"># timezone
+RUN apk add -U tzdata &amp;&amp; cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; apk del tzdata
+</code></pre>
+<ul>
+<li>安装时区数据包 <code>tzdata</code>。</li>
+<li>将时区设置为上海时间。</li>
+<li>删除 <code>tzdata</code> 包以减少镜像大小。</li>
+</ul>
+<pre><code class="language-dockerfile"># runtime environment
+RUN apk add musl-dev gcc libxml2-dev libxslt-dev &amp;&amp; \
+    pip install --no-cache-dir -r requirements.txt &amp;&amp; \
+    apk del gcc musl-dev
+</code></pre>
+<ul>
+<li>安装构建环境和依赖项，包括 <code>musl-dev</code>、<code>gcc</code>、<code>libxml2-dev</code> 和 <code>libxslt-dev</code>。</li>
+<li>使用 <code>pip</code> 安装 <code>requirements.txt</code> 中列出的 Python 依赖项，并使用 <code>--no-cache-dir</code> 选项来避免缓存安装包，以减少镜像大小。</li>
+<li>删除 <code>gcc</code> 和 <code>musl-dev</code> 包，以减少镜像大小。</li>
+</ul>
+<h3 id="复制应用程序文件">复制应用程序文件</h3>
+<pre><code class="language-dockerfile">COPY . .
+</code></pre>
+<ul>
+<li>将当前目录下的所有文件复制到容器的 <code>/app</code> 目录中。</li>
+</ul>
+<h3 id="暴露端口和启动容器">暴露端口和启动容器</h3>
+<pre><code class="language-dockerfile">EXPOSE 5010
+</code></pre>
+<ul>
+<li>声明容器将在运行时监听的端口（5010）。</li>
+</ul>
+<pre><code class="language-dockerfile">ENTRYPOINT [ &quot;sh&quot;, &quot;start.sh&quot; ]
+</code></pre>
+<ul>
+<li>设置容器启动时执行的命令，即运行 <code>start.sh</code> 脚本。<code>start.sh</code> 脚本应包含启动应用程序的命令。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>这个 Dockerfile 文件构建了一个轻量级的 Python 应用镜像，设置了工作目录，复制了应用程序文件和依赖项，配置了中国的镜像源，加速包的下载，并配置了上海时区。构建过程包括安装依赖项和环境设置，最后指定了容器启动时的入口点。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#apk-repository">apk repository</a></li>
+<li><a href="#timezone">timezone</a></li>
+<li><a href="#runtime-environment">runtime environment</a><br>
+*
+<ul>
+<li><a href="#%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F%E5%92%8C%E7%BB%B4%E6%8A%A4%E8%80%85%E4%BF%A1%E6%81%AF">基础镜像和维护者信息</a></li>
+<li><a href="#%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95%E8%AE%BE%E7%BD%AE">工作目录设置</a></li>
+<li><a href="#%E5%A4%8D%E5%88%B6%E5%92%8C%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E9%A1%B9">复制和安装依赖项</a></li>
+<li><a href="#%E5%A4%8D%E5%88%B6%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%96%87%E4%BB%B6">复制应用程序文件</a></li>
+<li><a href="#%E6%9A%B4%E9%9C%B2%E7%AB%AF%E5%8F%A3%E5%92%8C%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8">暴露端口和启动容器</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/ying-yong-rong-qi-lian-jie-redis-rong-qi/">
+              <h3 class="post-title">
+                应用容器，连接redis容器
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,292 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>debian使用国内镜像源安装docker | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="debian使用国内镜像源安装docker | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="在 Debian 系统上使用国内镜像源安装 Docker，可以显著提高下载速度并避免连接问题。以下是详细步骤：
+
+1. 清理旧 Docker 版本（如有）
+sudo apt-get remove docker docker-engine d..." />
+    <meta name="keywords" content="程序相关,docker,linux" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              debian使用国内镜像源安装docker
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-03-31
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/i9zBBtCdmVg/" class="post-tag">
+                  # linux
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>在 Debian 系统上使用国内镜像源安装 Docker，可以显著提高下载速度并避免连接问题。以下是详细步骤：</p>
+<hr>
+<h3 id="1-清理旧-docker-版本如有"><strong>1. 清理旧 Docker 版本（如有）</strong></h3>
+<pre><code class="language-bash">sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo rm -rf /var/lib/docker
+</code></pre>
+<hr>
+<h3 id="2-安装必要依赖"><strong>2. 安装必要依赖</strong></h3>
+<pre><code class="language-bash">sudo apt-get update
+sudo apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+</code></pre>
+<hr>
+<h3 id="3-添加国内镜像源阿里云清华源"><strong>3. 添加国内镜像源（阿里云/清华源）</strong></h3>
+<h4 id="方法一使用阿里云镜像"><strong>方法一：使用阿里云镜像</strong></h4>
+<pre><code class="language-bash"># 创建密钥目录
+sudo mkdir -p /etc/apt/keyrings
+
+# 添加阿里云 Docker GPG 密钥
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# 添加阿里云镜像源
+echo \
+  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://mirrors.aliyun.com/docker-ce/linux/debian \
+  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</code></pre>
+<h4 id="方法二使用清华镜像"><strong>方法二：使用清华镜像</strong></h4>
+<pre><code class="language-bash"># 添加清华 Docker GPG 密钥
+curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# 添加清华镜像源
+echo \
+  &quot;deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian \
+  $(lsb_release -cs) stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</code></pre>
+<hr>
+<h3 id="4-更新软件包索引"><strong>4. 更新软件包索引</strong></h3>
+<pre><code class="language-bash">sudo apt-get update
+</code></pre>
+<hr>
+<h3 id="5-安装-docker-及插件"><strong>5. 安装 Docker 及插件</strong></h3>
+<pre><code class="language-bash">sudo apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin
+</code></pre>
+<hr>
+<h3 id="6-验证安装"><strong>6. 验证安装</strong></h3>
+<pre><code class="language-bash">sudo docker run hello-world
+</code></pre>
+<p>如果看到 <code>Hello from Docker!</code> 的欢迎信息，说明安装成功。</p>
+<hr>
+<h3 id="7-配置非-root-用户使用-docker可选"><strong>7. 配置非 root 用户使用 Docker（可选）</strong></h3>
+<pre><code class="language-bash">sudo usermod -aG docker $USER
+newgrp docker  # 立即生效（或重新登录）
+</code></pre>
+<hr>
+<h3 id="常见问题解决"><strong>常见问题解决</strong></h3>
+<h4 id="1-如果报错-release-file-is-not-valid-yet"><strong>1. 如果报错 <code>Release file is not valid yet</code></strong></h4>
+<pre><code class="language-bash"># 同步系统时间
+sudo apt-get install -y ntpdate
+sudo ntpdate pool.ntp.org
+</code></pre>
+<h4 id="2-如果报错-gpg-error"><strong>2. 如果报错 <code>GPG error</code></strong></h4>
+<pre><code class="language-bash"># 重新导入密钥
+sudo rm /etc/apt/keyrings/docker.gpg
+curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo apt-get update
+</code></pre>
+<h4 id="3-如果-debian-版本不匹配"><strong>3. 如果 Debian 版本不匹配</strong></h4>
+<p>手动替换 <code>$(lsb_release -cs)</code> 为您的 Debian 代号（如 <code>bookworm</code>、<code>bullseye</code>）：</p>
+<pre><code class="language-bash">echo &quot;deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/debian bookworm stable&quot; | sudo tee /etc/apt/sources.list.d/docker.list
+</code></pre>
+<hr>
+<h3 id="一键安装脚本适用于快速部署"><strong>一键安装脚本（适用于快速部署）</strong></h3>
+<pre><code class="language-bash">curl -fsSL https://get.docker.com | sudo sh -s -- --mirror Aliyun
+</code></pre>
+<p>通过以上步骤，您可以在 Debian 系统上快速、稳定地通过国内镜像源安装 Docker。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#1-%E6%B8%85%E7%90%86%E6%97%A7-docker-%E7%89%88%E6%9C%AC%E5%A6%82%E6%9C%89"><strong>1. 清理旧 Docker 版本（如有）</strong></a></li>
+<li><a href="#2-%E5%AE%89%E8%A3%85%E5%BF%85%E8%A6%81%E4%BE%9D%E8%B5%96"><strong>2. 安装必要依赖</strong></a></li>
+<li><a href="#3-%E6%B7%BB%E5%8A%A0%E5%9B%BD%E5%86%85%E9%95%9C%E5%83%8F%E6%BA%90%E9%98%BF%E9%87%8C%E4%BA%91%E6%B8%85%E5%8D%8E%E6%BA%90"><strong>3. 添加国内镜像源（阿里云/清华源）</strong></a>
+<ul>
+<li><a href="#%E6%96%B9%E6%B3%95%E4%B8%80%E4%BD%BF%E7%94%A8%E9%98%BF%E9%87%8C%E4%BA%91%E9%95%9C%E5%83%8F"><strong>方法一：使用阿里云镜像</strong></a></li>
+<li><a href="#%E6%96%B9%E6%B3%95%E4%BA%8C%E4%BD%BF%E7%94%A8%E6%B8%85%E5%8D%8E%E9%95%9C%E5%83%8F"><strong>方法二：使用清华镜像</strong></a></li>
+</ul>
+</li>
+<li><a href="#4-%E6%9B%B4%E6%96%B0%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%B4%A2%E5%BC%95"><strong>4. 更新软件包索引</strong></a></li>
+<li><a href="#5-%E5%AE%89%E8%A3%85-docker-%E5%8F%8A%E6%8F%92%E4%BB%B6"><strong>5. 安装 Docker 及插件</strong></a></li>
+<li><a href="#6-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><strong>6. 验证安装</strong></a></li>
+<li><a href="#7-%E9%85%8D%E7%BD%AE%E9%9D%9E-root-%E7%94%A8%E6%88%B7%E4%BD%BF%E7%94%A8-docker%E5%8F%AF%E9%80%89"><strong>7. 配置非 root 用户使用 Docker（可选）</strong></a></li>
+<li><a href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><strong>常见问题解决</strong></a>
+<ul>
+<li><a href="#1-%E5%A6%82%E6%9E%9C%E6%8A%A5%E9%94%99-release-file-is-not-valid-yet"><strong>1. 如果报错 <code>Release file is not valid yet</code></strong></a></li>
+<li><a href="#2-%E5%A6%82%E6%9E%9C%E6%8A%A5%E9%94%99-gpg-error"><strong>2. 如果报错 <code>GPG error</code></strong></a></li>
+<li><a href="#3-%E5%A6%82%E6%9E%9C-debian-%E7%89%88%E6%9C%AC%E4%B8%8D%E5%8C%B9%E9%85%8D"><strong>3. 如果 Debian 版本不匹配</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E8%84%9A%E6%9C%AC%E9%80%82%E7%94%A8%E4%BA%8E%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2"><strong>一键安装脚本（适用于快速部署）</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/go-shi-xian-wss-de-fu-wu-duan-he-ke-hu-duan/">
+              <h3 class="post-title">
+                Go实现wss的服务端和客户端
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

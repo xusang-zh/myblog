@@ -1,0 +1,312 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>linux系统（ubuntu）docker容器安装python3.8 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="linux系统（ubuntu）docker容器安装python3.8 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="python3.8
+如果在 Ubuntu 上运行 sudo apt install python3.8 时遇到错误：
+E: Package 'python3.8' has no installation candidate
+
+这说明 默认的..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              linux系统（ubuntu）docker容器安装python3.8
+            </h2>
+            <div class="post-info">
+              <span>
+                2025-04-02
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h1 id="python38">python3.8</h1>
+<p>如果在 Ubuntu 上运行 <code>sudo apt install python3.8</code> 时遇到错误：</p>
+<pre><code>E: Package 'python3.8' has no installation candidate
+</code></pre>
+<p>这说明 <strong>默认的 Ubuntu 软件仓库没有 Python 3.8</strong>，但可以通过以下方法安装：</p>
+<hr>
+<h2 id="解决方案-1使用-deadsnakes-ppa推荐"><strong>解决方案 1：使用 <code>deadsnakes</code> PPA（推荐）</strong></h2>
+<p>适用于 <strong>Ubuntu 18.04/20.04/22.04</strong>，提供较新的 Python 版本。</p>
+<h3 id="1-添加-deadsnakes-ppa"><strong>1. 添加 <code>deadsnakes</code> PPA</strong></h3>
+<pre><code class="language-bash">sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+</code></pre>
+<h3 id="2-安装-python-38"><strong>2. 安装 Python 3.8</strong></h3>
+<pre><code class="language-bash">sudo apt install python3.8
+</code></pre>
+<h3 id="3-验证安装"><strong>3. 验证安装</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<p>输出类似：</p>
+<pre><code>Python 3.8.10
+</code></pre>
+<hr>
+<h2 id="解决方案-2从源代码编译安装"><strong>解决方案 2：从源代码编译安装</strong></h2>
+<p>适用于所有 Ubuntu 版本，但需要手动编译。</p>
+<h3 id="1-安装编译依赖"><strong>1. 安装编译依赖</strong></h3>
+<pre><code class="language-bash">sudo apt update
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
+</code></pre>
+<h3 id="2-下载-python-38-源码"><strong>2. 下载 Python 3.8 源码</strong></h3>
+<pre><code class="language-bash">wget https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tar.xz
+tar -xf Python-3.8.18.tar.xz
+cd Python-3.8.18
+</code></pre>
+<h3 id="3-编译并安装"><strong>3. 编译并安装</strong></h3>
+<pre><code class="language-bash">./configure --enable-optimizations
+make -j $(nproc)  # 多核编译加快速度
+sudo make altinstall  # 避免覆盖系统默认 Python
+</code></pre>
+<h3 id="4-验证安装"><strong>4. 验证安装</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<p>输出：</p>
+<pre><code>Python 3.8.18
+</code></pre>
+<hr>
+<h2 id="解决方案-3使用-pyenv推荐多版本管理"><strong>解决方案 3：使用 <code>pyenv</code>（推荐多版本管理）</strong></h2>
+<p>适合需要管理多个 Python 版本的用户。</p>
+<h3 id="1-安装-pyenv"><strong>1. 安装 <code>pyenv</code></strong></h3>
+<pre><code class="language-bash">curl https://pyenv.run | bash
+</code></pre>
+<p>然后按照提示添加环境变量（如 <code>~/.bashrc</code> 或 <code>~/.zshrc</code>）：</p>
+<pre><code class="language-bash">echo 'export PATH=&quot;$HOME/.pyenv/bin:$PATH&quot;' &gt;&gt; ~/.bashrc
+echo 'eval &quot;$(pyenv init --path)&quot;' &gt;&gt; ~/.bashrc
+echo 'eval &quot;$(pyenv virtualenv-init -)&quot;' &gt;&gt; ~/.bashrc
+source ~/.bashrc
+</code></pre>
+<h3 id="2-安装-python-38-2"><strong>2. 安装 Python 3.8</strong></h3>
+<pre><code class="language-bash">pyenv install 3.8.18
+</code></pre>
+<h3 id="3-设为全局默认可选"><strong>3. 设为全局默认（可选）</strong></h3>
+<pre><code class="language-bash">pyenv global 3.8.18
+</code></pre>
+<h3 id="4-验证"><strong>4. 验证</strong></h3>
+<pre><code class="language-bash">python3.8 --version
+</code></pre>
+<hr>
+<h2 id="解决方案-4使用-conda适合科学计算用户"><strong>解决方案 4：使用 <code>conda</code>（适合科学计算用户）</strong></h2>
+<p>如果使用 Anaconda/miniconda，可以直接安装 Python 3.8：</p>
+<pre><code class="language-bash">conda create -n py38 python=3.8
+conda activate py38
+python --version
+</code></pre>
+<hr>
+<h2 id="总结"><strong>总结</strong></h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>适用场景</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>deadsnakes</code> PPA</strong></td>
+<td>Ubuntu 18.04/20.04/22.04</td>
+<td><code>sudo add-apt-repository ppa:deadsnakes/ppa</code> → <code>sudo apt install python3.8</code></td>
+</tr>
+<tr>
+<td><strong>源码编译</strong></td>
+<td>所有 Ubuntu 版本</td>
+<td><code>./configure --enable-optimizations &amp;&amp; make altinstall</code></td>
+</tr>
+<tr>
+<td><strong><code>pyenv</code></strong></td>
+<td>多版本管理</td>
+<td><code>pyenv install 3.8.18</code></td>
+</tr>
+<tr>
+<td><strong><code>conda</code></strong></td>
+<td>Anaconda 用户</td>
+<td><code>conda create -n py38 python=3.8</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>推荐方案：</strong></p>
+<ul>
+<li><strong>普通用户</strong> → <strong><code>deadsnakes</code> PPA</strong>（最简单）</li>
+<li><strong>开发者/多版本需求</strong> → <strong><code>pyenv</code></strong></li>
+<li><strong>需要完全控制版本</strong> → <strong>源码编译</strong>  (精简版成功)</li>
+</ul>
+<p>ln -s /usr/local/bin/python3.8 /usr/local/bin/python3<br>
+设置软路由</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#python38">python3.8</a>
+<ul>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1%E4%BD%BF%E7%94%A8-deadsnakes-ppa%E6%8E%A8%E8%8D%90"><strong>解决方案 1：使用 <code>deadsnakes</code> PPA（推荐）</strong></a>
+<ul>
+<li><a href="#1-%E6%B7%BB%E5%8A%A0-deadsnakes-ppa"><strong>1. 添加 <code>deadsnakes</code> PPA</strong></a></li>
+<li><a href="#2-%E5%AE%89%E8%A3%85-python-38"><strong>2. 安装 Python 3.8</strong></a></li>
+<li><a href="#3-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><strong>3. 验证安装</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2%E4%BB%8E%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><strong>解决方案 2：从源代码编译安装</strong></a>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85%E7%BC%96%E8%AF%91%E4%BE%9D%E8%B5%96"><strong>1. 安装编译依赖</strong></a></li>
+<li><a href="#2-%E4%B8%8B%E8%BD%BD-python-38-%E6%BA%90%E7%A0%81"><strong>2. 下载 Python 3.8 源码</strong></a></li>
+<li><a href="#3-%E7%BC%96%E8%AF%91%E5%B9%B6%E5%AE%89%E8%A3%85"><strong>3. 编译并安装</strong></a></li>
+<li><a href="#4-%E9%AA%8C%E8%AF%81%E5%AE%89%E8%A3%85"><strong>4. 验证安装</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-3%E4%BD%BF%E7%94%A8-pyenv%E6%8E%A8%E8%8D%90%E5%A4%9A%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><strong>解决方案 3：使用 <code>pyenv</code>（推荐多版本管理）</strong></a>
+<ul>
+<li><a href="#1-%E5%AE%89%E8%A3%85-pyenv"><strong>1. 安装 <code>pyenv</code></strong></a></li>
+<li><a href="#2-%E5%AE%89%E8%A3%85-python-38-2"><strong>2. 安装 Python 3.8</strong></a></li>
+<li><a href="#3-%E8%AE%BE%E4%B8%BA%E5%85%A8%E5%B1%80%E9%BB%98%E8%AE%A4%E5%8F%AF%E9%80%89"><strong>3. 设为全局默认（可选）</strong></a></li>
+<li><a href="#4-%E9%AA%8C%E8%AF%81"><strong>4. 验证</strong></a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-4%E4%BD%BF%E7%94%A8-conda%E9%80%82%E5%90%88%E7%A7%91%E5%AD%A6%E8%AE%A1%E7%AE%97%E7%94%A8%E6%88%B7"><strong>解决方案 4：使用 <code>conda</code>（适合科学计算用户）</strong></a></li>
+<li><a href="#%E6%80%BB%E7%BB%93"><strong>总结</strong></a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/linux-xi-tong-ubuntudocker-rong-qi-an-zhuang-memcached/">
+              <h3 class="post-title">
+                linux系统（ubuntu）docker容器安装memcached
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

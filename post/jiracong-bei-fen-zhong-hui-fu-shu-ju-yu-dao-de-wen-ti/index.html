@@ -1,0 +1,183 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JIRA，从备份中恢复数据遇到的问题 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="JIRA，从备份中恢复数据遇到的问题 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="备份流程：
+进入系统 -&gt; 导入与导出 -&gt; 备份系统 将数据进行备份
+恢复流程：
+1.将备份的文件保存到该目录下：C:\Program Files\Atlassian\Application Data\JIRA\import（..." />
+    <meta name="keywords" content="其他" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              JIRA，从备份中恢复数据遇到的问题
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/BG9RFfZxmy0/" class="post-tag">
+                  # 其他
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>备份流程：<br>
+进入系统 -&gt; 导入与导出 -&gt; 备份系统 将数据进行备份</p>
+<p>恢复流程：<br>
+1.将备份的文件保存到该目录下：C:\Program Files\Atlassian\Application Data\JIRA\import（恢复页面有提示）<br>
+2.进入系统 -&gt; 导入与导出 -&gt; 输入备份的文件名，点击复原，等待即可</p>
+<p>恢复过程中遇到的问题：<br>
+1.字符集问题<br>
+-过程：在填完数据库信息之后，选择通过数据导入，结果报错了，说是string无法识别。推测可能是字符集问题，百度了很多方法都不对。改了数据库的set_character_server为utf8也不行。</p>
+<p>后来把原始的数据库整个导出为sql，然后在新的jira数据库导入sql。发现可以了，同时数据库的表的排序规则从latin1变成了utf8。可是打开jira发现所有的项目在，可是任务和sprint都是空的。这个时候，在系统 -&gt; 恢复数据的界面重新导入备份数据，发现jira的问题这些都正常了</p>
+<p>分析了原因如下：<br>
+创建的时候jira的默认字符集为lantin1，而备份的原始数据库为utf8。所以要把数据库所有表的排序规则改成utf8才能正常导入。</p>
+<p>导入完成后，发现证书也一起导过来了，然后提示证书过期。因为没破解，然后把对应的破解文件放入对应的目录。就都搞定了。</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/django-shi-yong-crontab-zhi-xing-ding-shi-ren-wu-crond-ri-zhi-you-zhi-xing-ji-lu-dan-shi-mei-you-shi-ji-zhi-xing-de-dao-jie-guo/">
+              <h3 class="post-title">
+                Django使用crontab执行定时任务，crond日志有执行记录，但是没有实际执行得到结果
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

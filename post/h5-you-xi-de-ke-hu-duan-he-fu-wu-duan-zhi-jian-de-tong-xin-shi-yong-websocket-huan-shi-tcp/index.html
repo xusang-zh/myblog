@@ -1,0 +1,581 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>h5游戏的客户端和服务端之间的通信，是用websocket还是tcp | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="h5游戏的客户端和服务端之间的通信，是用websocket还是tcp | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="对于 H5 游戏来说，由于浏览器不能直接使用 TCP，我们需要在服务端提供一个 WebSocket 服务作为代理，然后再通过 TCP 连接到游戏服务器
+
+首先是浏览器端的 WebSocket 客户端代码：
+
+interface Messag..." />
+    <meta name="keywords" content="程序相关,Go,TS" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              h5游戏的客户端和服务端之间的通信，是用websocket还是tcp
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-12-05
+              </span>
+              <span>
+                8 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mkRH4UyCSx0/" class="post-tag">
+                  # 程序相关
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/mV40mMrAwiL/" class="post-tag">
+                  # Go
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/s2pvoY_SosW/" class="post-tag">
+                  # TS
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>对于 H5 游戏来说，由于浏览器不能直接使用 TCP，我们需要在服务端提供一个 WebSocket 服务作为代理，然后再通过 TCP 连接到游戏服务器</p>
+<ul>
+<li>首先是浏览器端的 WebSocket 客户端代码：</li>
+</ul>
+<pre><code class="language-typescript">interface Message {
+    cmd: number;
+    data: any;
+}
+
+export class GameSocket {
+    private ws: WebSocket;
+    private messageHandlers: Map&lt;number, (data: any) =&gt; void&gt;;
+
+    constructor(wsUrl: string) {
+        this.messageHandlers = new Map();
+        this.ws = new WebSocket(wsUrl);
+        this.initWebSocket();
+    }
+
+    private initWebSocket() {
+        this.ws.onopen = () =&gt; {
+            console.log('WebSocket连接成功');
+            // 发送登录消息
+            this.send(1001, { userId: '123' });
+        };
+
+        this.ws.onmessage = (event) =&gt; {
+            const message: Message = JSON.parse(event.data);
+            this.handleMessage(message);
+        };
+
+        this.ws.onclose = () =&gt; {
+            console.log('WebSocket连接关闭');
+            // 可以实现重连逻辑
+        };
+
+        this.ws.onerror = (error) =&gt; {
+            console.error('WebSocket错误:', error);
+        };
+    }
+
+    public on(cmd: number, handler: (data: any) =&gt; void) {
+        this.messageHandlers.set(cmd, handler);
+    }
+
+    public send(cmd: number, data: any) {
+        const message: Message = { cmd, data };
+        this.ws.send(JSON.stringify(message));
+    }
+
+    private handleMessage(message: Message) {
+        const handler = this.messageHandlers.get(message.cmd);
+        if (handler) {
+            handler(message.data);
+        }
+    }
+}
+
+// 使用示例
+const gameSocket = new GameSocket('ws://localhost:8080/ws');
+
+gameSocket.on(1002, (data) =&gt; {
+    console.log('收到游戏消息:', data);
+});
+</code></pre>
+<ul>
+<li>WebSocket 代理服务器（Go）：</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+    &quot;net/http&quot;
+    &quot;sync&quot;
+
+    &quot;github.com/gorilla/websocket&quot;
+)
+
+const (
+    HeaderSize = 8
+    TCPServerAddr = &quot;localhost:9000&quot;  // TCP游戏服务器地址
+)
+
+// WebSocket升级器
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
+}
+
+// 代理连接
+type ProxyConnection struct {
+    wsConn  *websocket.Conn
+    tcpConn net.Conn
+    mutex   sync.Mutex
+}
+
+type Message struct {
+    Cmd  int         `json:&quot;cmd&quot;`
+    Data interface{} `json:&quot;data&quot;`
+}
+
+func main() {
+    http.HandleFunc(&quot;/ws&quot;, handleWebSocket)
+    log.Printf(&quot;WebSocket代理服务器启动在 :8080&quot;)
+    log.Fatal(http.ListenAndServe(&quot;:8080&quot;, nil))
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+    wsConn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Printf(&quot;WebSocket升级失败: %v&quot;, err)
+        return
+    }
+    defer wsConn.Close()
+
+    // 连接TCP服务器
+    tcpConn, err := net.Dial(&quot;tcp&quot;, TCPServerAddr)
+    if err != nil {
+        log.Printf(&quot;连接TCP服务器失败: %v&quot;, err)
+        return
+    }
+    defer tcpConn.Close()
+
+    proxy := &amp;ProxyConnection{
+        wsConn:  wsConn,
+        tcpConn: tcpConn,
+    }
+
+    // 启动转发协程
+    go proxy.wsToTcp()
+    proxy.tcpToWs()
+}
+
+// WebSocket -&gt; TCP
+func (p *ProxyConnection) wsToTcp() {
+    for {
+        // 读取WebSocket消息
+        _, wsData, err := p.wsConn.ReadMessage()
+        if err != nil {
+            log.Printf(&quot;读取WebSocket消息失败: %v&quot;, err)
+            return
+        }
+
+        // 解析WebSocket消息
+        var msg Message
+        if err := json.Unmarshal(wsData, &amp;msg); err != nil {
+            log.Printf(&quot;解析WebSocket消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 转换为TCP消息格式
+        tcpMsg, err := createTCPMessage(msg.Cmd, msg.Data)
+        if err != nil {
+            log.Printf(&quot;创建TCP消息失败: %v&quot;, err)
+            continue
+        }
+
+        // 发送到TCP服务器
+        p.mutex.Lock()
+        _, err = p.tcpConn.Write(tcpMsg)
+        p.mutex.Unlock()
+        if err != nil {
+            log.Printf(&quot;发送TCP消息失败: %v&quot;, err)
+            return
+        }
+    }
+}
+
+// TCP -&gt; WebSocket
+func (p *ProxyConnection) tcpToWs() {
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        // 读取TCP消息
+        n, err := p.tcpConn.Read(buffer)
+        if err != nil {
+            log.Printf(&quot;读取TCP消息失败: %v&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+        messageBuffer = p.handleTCPMessages(messageBuffer)
+    }
+}
+
+func (p *ProxyConnection) handleTCPMessages(buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            
+            // 解析TCP消息体
+            var data interface{}
+            if err := json.Unmarshal(messageBody, &amp;data); err != nil {
+                log.Printf(&quot;解析TCP消息体失败: %v&quot;, err)
+                buffer = buffer[length:]
+                continue
+            }
+
+            // 转换为WebSocket消息
+            wsMsg := Message{
+                Cmd:  int(cmd),
+                Data: data,
+            }
+
+            // 发送WebSocket消息
+            p.mutex.Lock()
+            err := p.wsConn.WriteJSON(wsMsg)
+            p.mutex.Unlock()
+            if err != nil {
+                log.Printf(&quot;发送WebSocket消息失败: %v&quot;, err)
+                return buffer
+            }
+
+            buffer = buffer[length:]
+        } else {
+            break
+        }
+    }
+    return buffer
+}
+
+func createTCPMessage(cmd int, data interface{}) ([]byte, error) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        return nil, err
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    messageLength := HeaderSize + len(jsonData)
+    binary.BigEndian.PutUint32(header[0:4], uint32(messageLength))
+    binary.BigEndian.PutUint32(header[4:8], uint32(cmd))
+
+    // 组合完整消息
+    return append(header, jsonData...), nil
+}
+</code></pre>
+<ul>
+<li>TCP 游戏服务器</li>
+</ul>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/binary&quot;
+    &quot;encoding/json&quot;
+    &quot;log&quot;
+    &quot;net&quot;
+)
+
+// 消息头部大小（4字节长度 + 4字节命令号）
+const HeaderSize = 8
+
+// Client 客户端连接
+type Client struct {
+    conn net.Conn
+    send chan []byte
+}
+
+// Message 消息结构
+type Message struct {
+    Length uint32
+    Cmd    uint32
+    Data   []byte
+}
+
+func main() {
+    listener, err := net.Listen(&quot;tcp&quot;, &quot;:8080&quot;)
+    if err != nil {
+        log.Fatal(&quot;监听端口失败:&quot;, err)
+    }
+    defer listener.Close()
+
+    log.Println(&quot;服务器启动在 :8080&quot;)
+
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            log.Println(&quot;接受连接失败:&quot;, err)
+            continue
+        }
+
+        client := &amp;Client{
+            conn: conn,
+            send: make(chan []byte, 256),
+        }
+
+        go handleConnection(client)
+    }
+}
+
+func handleConnection(client *Client) {
+    defer client.conn.Close()
+
+    // 启动发送协程
+    go writeLoop(client)
+
+    buffer := make([]byte, 1024)
+    messageBuffer := make([]byte, 0)
+
+    for {
+        n, err := client.conn.Read(buffer)
+        if err != nil {
+            log.Println(&quot;读取数据失败:&quot;, err)
+            return
+        }
+
+        messageBuffer = append(messageBuffer, buffer[:n]...)
+
+        // 处理消息
+        messageBuffer = handleMessages(client, messageBuffer)
+    }
+}
+
+func handleMessages(client *Client, buffer []byte) []byte {
+    for len(buffer) &gt;= HeaderSize {
+        // 读取消息头
+        length := binary.BigEndian.Uint32(buffer[0:4])
+        cmd := binary.BigEndian.Uint32(buffer[4:8])
+
+        // 检查是否收到完整的消息
+        if uint32(len(buffer)) &gt;= length {
+            // 提取消息体
+            messageBody := buffer[HeaderSize:length]
+            // 处理消息
+            handleMessage(client, cmd, messageBody)
+            // 更新缓冲区
+            buffer = buffer[length:]
+        } else {
+            // 消息不完整，等待更多数据
+            break
+        }
+    }
+    return buffer
+}
+
+func writeLoop(client *Client) {
+    for message := range client.send {
+        _, err := client.conn.Write(message)
+        if err != nil {
+            log.Println(&quot;发送消息失败:&quot;, err)
+            return
+        }
+    }
+}
+
+func handleMessage(client *Client, cmd uint32, data []byte) {
+    switch cmd {
+    case 1001: // 登录
+        var loginData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;loginData); err != nil {
+            log.Printf(&quot;解析登录消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到登录消息: %v&quot;, loginData)
+        
+        // 发送响应
+        response := map[string]interface{}{
+            &quot;status&quot;: &quot;success&quot;,
+        }
+        sendMessage(client, 1001, response)
+
+    case 1002: // 玩家移动
+        var moveData map[string]interface{}
+        if err := json.Unmarshal(data, &amp;moveData); err != nil {
+            log.Printf(&quot;解析移动消息失败: %v&quot;, err)
+            return
+        }
+        log.Printf(&quot;收到玩家移动消息: %v&quot;, moveData)
+    }
+}
+
+func sendMessage(client *Client, cmd uint32, data interface{}) {
+    // 序列化消息体
+    jsonData, err := json.Marshal(data)
+    if err != nil {
+        log.Printf(&quot;序列化消息失败: %v&quot;, err)
+        return
+    }
+
+    // 创建消息头
+    header := make([]byte, HeaderSize)
+    binary.BigEndian.PutUint32(header[0:4], uint32(HeaderSize+len(jsonData)))
+    binary.BigEndian.PutUint32(header[4:8], cmd)
+
+    // 组合完整消息
+    message := append(header, jsonData...)
+    client.send &lt;- message
+}
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/gitignore-de-nei-rong-tian-jia/">
+              <h3 class="post-title">
+                .gitignore的内容添加
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>应用容器，连接redis容器 | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="应用容器，连接redis容器 | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="如果应用通过环境变量 DB_CONN 来配置 Redis 的连接信息，并且希望在 Docker 容器之间连接 Redis，那么你需要确保 DB_CONN 环境变量包含正确的 Redis 连接字符串。假设 Redis 容器没有设置密码并且暴露..." />
+    <meta name="keywords" content="docker" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              应用容器，连接redis容器
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <p>如果应用通过环境变量 <code>DB_CONN</code> 来配置 Redis 的连接信息，并且希望在 Docker 容器之间连接 Redis，那么你需要确保 <code>DB_CONN</code> 环境变量包含正确的 Redis 连接字符串。假设 Redis 容器没有设置密码并且暴露端口为 <code>6379</code>，并且你使用了自定义的 Docker 网络 <code>my_network</code>，以下是步骤和命令。</p>
+<h3 id="修改后的步骤">修改后的步骤</h3>
+<ol>
+<li>
+<p><strong>创建自定义网络（如果还未创建）：</strong></p>
+<pre><code class="language-sh">docker network create my_network
+</code></pre>
+</li>
+<li>
+<p><strong>运行 Redis 容器：</strong></p>
+<pre><code class="language-sh">docker run -d --name redis-container --network my_network -p 6379:6379 redis:latest
+</code></pre>
+</li>
+<li>
+<p><strong>运行应用容器并设置 <code>DB_CONN</code> 环境变量：</strong></p>
+<pre><code class="language-sh">docker run -d --name app-container --network my_network -p 5010:5010 --env DB_CONN=redis://redis-container:6379/0 username/proxy_pool:latest
+</code></pre>
+<p>这里的 <code>DB_CONN</code> 环境变量值是 <code>redis://redis-container:6379/0</code>，表示：</p>
+<ul>
+<li><code>redis://</code> 是协议头。</li>
+<li><code>redis-container</code> 是 Redis 容器的名称，Docker 网络会自动解析它的 IP 地址。</li>
+<li><code>6379</code> 是 Redis 容器暴露的端口。</li>
+<li><code>/0</code> 是 Redis 数据库编号。</li>
+</ul>
+</li>
+</ol>
+<h3 id="详细说明">详细说明</h3>
+<ul>
+<li><code>--network my_network</code>：将应用容器连接到 <code>my_network</code> 网络，与 Redis 容器在同一网络中。</li>
+<li><code>--env DB_CONN=redis://redis-container:6379/0</code>：设置 <code>DB_CONN</code> 环境变量，让应用连接到 <code>redis-container</code> 上的 Redis 服务。</li>
+</ul>
+<h3 id="示例命令总结">示例命令总结</h3>
+<p>以下是完整的命令步骤：</p>
+<ol>
+<li>
+<p><strong>创建自定义网络（如果还未创建）：</strong></p>
+<pre><code class="language-sh">docker network create my_network
+</code></pre>
+</li>
+<li>
+<p><strong>运行 Redis 容器：</strong></p>
+<pre><code class="language-sh">docker run -d --name redis-container --network my_network -p 6379:6379 redis:latest
+</code></pre>
+</li>
+<li>
+<p><strong>运行应用容器并设置 <code>DB_CONN</code> 环境变量：</strong></p>
+<pre><code class="language-sh">docker run -d --name app-container --network my_network -p 5010:5010 --env DB_CONN=redis://redis-container:6379/0 jhao104/proxy_pool:latest
+</code></pre>
+</li>
+</ol>
+<h3 id="验证连接">验证连接</h3>
+<p>运行这几个命令后，你可以通过访问 <code>http://localhost:5010</code> 验证你的应用是否能够正常工作并连接到 Redis 服务。通过 Docker 自定义网络，你可以避免手动查找 IP 地址和进行复杂的配置，使用容器名称即可轻松实现服务间通信。</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E4%BF%AE%E6%94%B9%E5%90%8E%E7%9A%84%E6%AD%A5%E9%AA%A4">修改后的步骤</a></li>
+<li><a href="#%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E">详细说明</a></li>
+<li><a href="#%E7%A4%BA%E4%BE%8B%E5%91%BD%E4%BB%A4%E6%80%BB%E7%BB%93">示例命令总结</a></li>
+<li><a href="#%E9%AA%8C%E8%AF%81%E8%BF%9E%E6%8E%A5">验证连接</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/ke-hu-duan-gai-chuang-kou-da-xiao/">
+              <h3 class="post-title">
+                客户端改窗口大小
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

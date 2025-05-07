@@ -1,0 +1,269 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Docker部署mysql | xs&amp;zh</title>
+<link rel="shortcut icon" href="https://xusang-zh.github.io/myblog//favicon.ico?v=1746622617186">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://xusang-zh.github.io/myblog//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Docker部署mysql | xs&amp;zh - Atom Feed" href="https://xusang-zh.github.io/myblog//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="拉取数据库
+docker pull mysql:5.7.37
+
+
+查看3306端口是否被占用,或者是否有mysql启动
+netstat -nultp|grep 3306
+ps aux |grep mysql
+
+# 如果有mysql启动着，就..." />
+    <meta name="keywords" content="docker,mysql" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://xusang-zh.github.io/myblog/">
+  <img class="avatar" src="https://xusang-zh.github.io/myblog//images/avatar.png?v=1746622617186" alt="">
+  </a>
+  <h1 class="site-title">
+    xs&amp;zh
+  </h1>
+  <p class="site-description">
+    xs&zh的小窝窝
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/myblog/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/myblog/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/myblog/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/myblog/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Docker部署mysql
+            </h2>
+            <div class="post-info">
+              <span>
+                2024-11-30
+              </span>
+              <span>
+                2 min read
+              </span>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/-P6oR6Zlkhj/" class="post-tag">
+                  # docker
+                </a>
+              
+                <a href="https://xusang-zh.github.io/myblog/tag/BCgGw1b16Fq/" class="post-tag">
+                  # mysql
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content" v-pre>
+                <h5 id="拉取数据库">拉取数据库</h5>
+<pre><code class="language-shell">docker pull mysql:5.7.37
+</code></pre>
+<hr>
+<h5 id="查看3306端口是否被占用或者是否有mysql启动">查看3306端口是否被占用,或者是否有mysql启动</h5>
+<pre><code class="language-shell">netstat -nultp|grep 3306
+ps aux |grep mysql
+
+# 如果有mysql启动着，就停止，用kill -9 pid杀不掉进程
+# 可以用 sudo service mysql stop 命令停止mysql进程
+
+# 然后就可以创建并启动容器，否则会报错端口占用
+</code></pre>
+<hr>
+<h5 id="创建数据库容器">创建数据库容器</h5>
+<pre><code class="language-shell">docker run -itd --name mysqlserver \
+-p 3306:3306 \
+-v /home/mysql:/var/lib/mysql \
+-e TZ=Asia/Shanghai \
+-e MYSQL_ROOT_PASSWORD='123456' mysql:5.7
+</code></pre>
+<hr>
+<h5 id="设置sql_mode">设置sql_mode</h5>
+<pre><code class="language-shell"># 进入docker容器
+docker exec -it mysqlserver /bin/bash
+
+# 进入容器后可以设置数据库sql_mode
+# 进入mysql
+mysql -hlocalhost -uroot -p
+
+# 进入后查看当前的sql_mode
+select @@sql_mode
+
+# 修改sql_mode
+SET @@sql_mode = &quot;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;
+
+# 但是这里会有个问题，就是服务重启后，就失效了，可以直接改配置文件
+# 先退出到宿主机
+# 将容器配置文件copy到宿主机，注意要先创建目标目录
+docker cp mysqlserver:/etc/mysql/mysql.conf.d/mysql.cnf /home/mysql/conf/mysql.cnf
+
+# 执行vim命令
+vim /home/mysql/conf/mysql.cnf
+# 在末尾增加内容
+sql_mode=&quot;STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION&quot;
+:wq #保存后退出
+
+# 将修改后的文件copy回容器内
+docker cp /home/mysql/conf/mysql.cnf mysqlserver:/etc/mysql/mysql.conf.d/mysql.cnf
+
+# 重启docker容器
+docker restart mysqlserver
+
+# 可以进入mysql容器内确认sql_mode是否改变
+</code></pre>
+<hr>
+<h5 id="导入sql">导入sql</h5>
+<pre><code class="language-shell"># 先创建数据库
+CREATE DATABASE IF NOT EXISTS databasename DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
+# 切换到目标数据库
+use dbname;
+
+# 导入sql文件
+source /home/db/filename.sql;
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E6%8B%89%E5%8F%96%E6%95%B0%E6%8D%AE%E5%BA%93">拉取数据库</a></li>
+<li><a href="#%E6%9F%A5%E7%9C%8B3306%E7%AB%AF%E5%8F%A3%E6%98%AF%E5%90%A6%E8%A2%AB%E5%8D%A0%E7%94%A8%E6%88%96%E8%80%85%E6%98%AF%E5%90%A6%E6%9C%89mysql%E5%90%AF%E5%8A%A8">查看3306端口是否被占用,或者是否有mysql启动</a></li>
+<li><a href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%B9%E5%99%A8">创建数据库容器</a></li>
+<li><a href="#%E8%AE%BE%E7%BD%AEsql_mode">设置sql_mode</a></li>
+<li><a href="#%E5%AF%BC%E5%85%A5sql">导入sql</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://xusang-zh.github.io/myblog/post/golang-pei-zhi-pb30-liu-cheng/">
+              <h3 class="post-title">
+                Golang 配置pb3.0流程
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://xusang-zh.github.io/myblog//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
